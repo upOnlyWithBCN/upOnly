@@ -10,9 +10,8 @@ import { Button, SimpleGrid, Stack } from '@chakra-ui/react'
 import { circleObject } from '@/server/constants'
 import dynamic from 'next/dynamic'
 
-
-const ProfileCard = dynamic(() => import('../components/Profile/ProfileCard') ,{
-    ssr:false,
+const ProfileCard = dynamic(() => import('../components/Profile/ProfileCard'), {
+    ssr: false,
 })
 
 const inter = Inter({ subsets: ['latin'] })
@@ -43,6 +42,7 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
                 <div className={styles.center}>
                     <Stack direction="column">
                         <ProfileCard />
+                        {test}
                         {/* {test}
                         <div>{response}</div>
                         <SimpleGrid
@@ -51,8 +51,8 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
                         >
                             <ExchangeRateCard pair="ETH-USD" rate={ethUSD} />
                             <ExchangeRateCard pair="BTC-USD" rate={btcUSD} />
-    </SimpleGrid>*/ }
-                    </Stack> 
+    </SimpleGrid>*/}
+                    </Stack>
                 </div>
             </main>
         </>
