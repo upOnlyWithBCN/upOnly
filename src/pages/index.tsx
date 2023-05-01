@@ -8,8 +8,12 @@ import { Circle, CircleEnvironments, Ping, Rate } from '@circle-fin/circle-sdk'
 import React, { useEffect, useState } from 'react'
 import { Button, SimpleGrid, Stack } from '@chakra-ui/react'
 import { circleObject } from '@/server/constants'
-import { ExchangeRateCard } from '@/components/ExchangeRateCard'
-import { ProfileCard } from '@/components/Profile/ProfileCard'
+import dynamic from 'next/dynamic'
+
+
+const ProfileCard = dynamic(() => import('../components/Profile/ProfileCard') ,{
+    ssr:false,
+})
 
 const inter = Inter({ subsets: ['latin'] })
 

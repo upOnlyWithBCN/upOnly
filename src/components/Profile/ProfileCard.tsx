@@ -6,7 +6,7 @@ export type ProfileCardProps = {
 
 }
 
-export const ProfileCard = ({}: ProfileCardProps) => {
+const  ProfileCard = ({}: ProfileCardProps) => {
   const { web3State } = useWeb3Context();
   const { connectionState, currentAccount } = web3State
 
@@ -60,3 +60,5 @@ export const ProfileCard = ({}: ProfileCardProps) => {
   </CardFooter>
 </Card>
 }
+
+export default ProfileCard

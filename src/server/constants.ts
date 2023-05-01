@@ -1,4 +1,5 @@
 import { Circle, CircleEnvironments } from '@circle-fin/circle-sdk'
+import { PrismaClient } from '@prisma/client'
 
 const circleInstance = () => {
     const API_KEY = process.env.API_KEY ?? ''
@@ -32,3 +33,11 @@ export const returnExchangePair = (
             return 'BTC-USD'
     }
 }
+
+
+const primsaInstance = () => {
+    const client = new PrismaClient();
+    return client;
+}
+
+export const prismaClient = primsaInstance();
