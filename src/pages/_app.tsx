@@ -2,12 +2,12 @@ import '@/styles/globals.css'
 import type { AppProps } from 'next/app'
 import { ChakraProvider, ThemeConfig, extendTheme } from '@chakra-ui/react'
 import theme from '@/styles/theme'
-import Footer from '@/components/Footer'
+import Footer from '@/components/Footer/Footer'
 import dynamic from 'next/dynamic'
 import Web3Network from '@/context/Web3Context'
 import CircleAPIContext from '@/context/CircleAPIContext'
 
-const ClientNavbar = dynamic(() => import('../components/Navbar'), {
+const ClientNavbar = dynamic(() => import('../components/Navbar/Navbar'), {
     ssr: false,
 })
 

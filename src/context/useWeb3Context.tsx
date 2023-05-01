@@ -1,7 +1,7 @@
 import detectEthereumProvider from '@metamask/detect-provider'
 import { useContext, useEffect, useState } from 'react'
 import { CONNECTION_STATE, INITIAL_STATE, LOCAL_STATE_KEY } from './constants'
-import { getAccounts, getChainID, disconnectWindowMM } from './metamask'
+import { getChainID, disconnectWindowMM, personalSign, getCurrentAccount } from './metamask'
 import { Web3CT } from './Web3Context'
 
 export function useWeb3Context() {
@@ -43,13 +43,20 @@ export function useWeb3Context() {
     }, [setWeb3State, web3State])
 
     const setDataFromWindowMM = async () => {
-        const newAccount = await getAccounts()
+        const newAccount = await getCurrentAccount()
         const chainID = await getChainID()
         setWeb3State({
             chainID: chainID,
             connectionState: CONNECTION_STATE.CONNECTED,
             currentAccount: newAccount,
         })
+    }
+
+    const signInUsingMM = async () => {
+        const currentAccount = await getCurrentAccount()
+        const resultHash =  await personalSign(currentAccount);
+        //TODO: we need to authenticate this with our backend ?
+        await setDataFromWindowMM();
     }
 
     /**
@@ -59,7 +66,8 @@ export function useWeb3Context() {
     const connectFromWindowMM = async () => {
         const provider = await detectEthereumProvider()
         if (provider) {
-            await setDataFromWindowMM()
+            // sign in 
+            await signInUsingMM();
         } else {
             console.error('metamask not installed')
         }

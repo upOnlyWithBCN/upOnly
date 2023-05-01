@@ -9,6 +9,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, SimpleGrid, Stack } from '@chakra-ui/react'
 import { circleObject } from '@/server/constants'
 import { ExchangeRateCard } from '@/components/ExchangeRateCard'
+import { ProfileCard } from '@/components/Profile/ProfileCard'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -37,7 +38,8 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
             <main className={styles.main}>
                 <div className={styles.center}>
                     <Stack direction="column">
-                        {test}
+                        <ProfileCard />
+                        {/* {test}
                         <div>{response}</div>
                         <SimpleGrid
                             spacing={4}
@@ -45,8 +47,8 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
                         >
                             <ExchangeRateCard pair="ETH-USD" rate={ethUSD} />
                             <ExchangeRateCard pair="BTC-USD" rate={btcUSD} />
-                        </SimpleGrid>
-                    </Stack>
+    </SimpleGrid>*/ }
+                    </Stack> 
                 </div>
             </main>
         </>
