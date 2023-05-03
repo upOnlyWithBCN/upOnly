@@ -14,18 +14,33 @@ import {
     Box,
     Text,
     Image,
+    Divider,
+    Stat,
+    StatLabel,
+    StatNumber,
+    StatHelpText,
+    StackDivider,
+    Stack,
 } from '@chakra-ui/react'
+import { useState } from 'react'
 
 export type ProfileCardProps = {}
 
 const ProfileCard = ({}: ProfileCardProps) => {
     const { web3State, setDataFromWindowMM } = useWeb3Context()
-    const { connectionState, currentAccount, user } = web3State
-
+    const { currentAccount, user } = web3State
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const onClick = async () => {
-        const { message } = await signUpWithCircle(currentAccount)
-        console.log(message)
-        setDataFromWindowMM(currentAccount)
+        setIsLoading(true)
+        try {
+            const { message } = await signUpWithCircle(currentAccount)
+            console.log(message)
+            setDataFromWindowMM(currentAccount)
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -38,7 +53,8 @@ const ProfileCard = ({}: ProfileCardProps) => {
                             src="https://bit.ly/sage-adebayo"
                         />
                         <Box>
-                            <Heading size="sm">{currentAccount}</Heading>
+                            <Heading size="sm">Welcome, user</Heading>
+                            <Heading size="sm">Here are your details</Heading>
                         </Box>
                     </Flex>
                 </Flex>
@@ -49,29 +65,41 @@ const ProfileCard = ({}: ProfileCardProps) => {
                         <Text>
                             Looks like you havent signed up with up only
                         </Text>
-                        <Button onClick={onClick}>
-                            create deposit wallet with us!
+                        <br />
+                        <Button
+                            isLoading={isLoading}
+                            colorScheme="green"
+                            onClick={onClick}
+                        >
+                            Create your upOnly wallet with us!
                         </Button>
                     </>
                 ) : (
-                    <Text>Your circle wallet address: {user.address}</Text>
+                    <Stack divider={<StackDivider />} spacing="4">
+                        <Stat>
+                            <StatLabel>Your Current Wallet address</StatLabel>
+                            <StatHelpText>{currentAccount}</StatHelpText>
+                        </Stat>
+                        <Stat>
+                            <StatLabel>Circle Wallet address</StatLabel>
+                            <StatHelpText>
+                                {user.deposit_wallet?.deposit_wallet_address}
+                            </StatHelpText>
+                        </Stat>
+                        <Stat>
+                            <StatLabel>Circle Wallet ID</StatLabel>
+                            <StatHelpText>
+                                {user.deposit_wallet?.deposit_wallet_id}
+                            </StatHelpText>
+                        </Stat>
+                        <Stat>
+                            <StatLabel>Circle User ID</StatLabel>
+                            <StatHelpText>{user.id}</StatHelpText>
+                        </Stat>
+                        <Text></Text>
+                    </Stack>
                 )}
             </CardBody>
-            <Image
-                objectFit="cover"
-                src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
-                alt="Chakra UI"
-            />
-
-            <CardFooter
-                justify="space-between"
-                flexWrap="wrap"
-                sx={{
-                    '& > button': {
-                        minW: '136px',
-                    },
-                }}
-            ></CardFooter>
         </Card>
     )
 }

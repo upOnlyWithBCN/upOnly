@@ -1,9 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import { Inter } from 'next/font/google'
 import styles from '@/styles/Home.module.css'
-import { useWeb3Context } from '@/context/useWeb3Context'
-import useCircleAPIContext from '@/context/useCircleAPIContext'
 import { Circle, CircleEnvironments, Ping, Rate } from '@circle-fin/circle-sdk'
 import React, { useEffect, useState } from 'react'
 import { Button, SimpleGrid, Stack } from '@chakra-ui/react'
@@ -13,8 +10,6 @@ import dynamic from 'next/dynamic'
 const ProfileCard = dynamic(() => import('../components/Profile/ProfileCard'), {
     ssr: false,
 })
-
-const inter = Inter({ subsets: ['latin'] })
 
 type HOMEProps = {
     rates: {
@@ -42,16 +37,6 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
                 <div className={styles.center}>
                     <Stack direction="column">
                         <ProfileCard />
-                        {test}
-                        {/* {test}
-                        <div>{response}</div>
-                        <SimpleGrid
-                            spacing={4}
-                            templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
-                        >
-                            <ExchangeRateCard pair="ETH-USD" rate={ethUSD} />
-                            <ExchangeRateCard pair="BTC-USD" rate={btcUSD} />
-    </SimpleGrid>*/}
                     </Stack>
                 </div>
             </main>

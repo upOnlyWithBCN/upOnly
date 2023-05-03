@@ -6,15 +6,18 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
   id             Int             @id @default(autoincrement())
+  // user metamask wallet address
   address        String          @unique
   // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/one-to-one-relations
   deposit_wallet Deposit_wallet?
+  projects_owned Project[]
+  Donations      Donations[]
 }
 
 model Deposit_wallet {
@@ -23,5 +26,63 @@ model Deposit_wallet {
   deposit_wallet_id      String @unique
   userId                 Int    @unique
   User                   User   @relation(fields: [userId], references: [id])
+}
 
+model Chain {
+  chain_id String @unique
+
+  Project   Project? @relation(fields: [projectId], references: [project_id])
+  projectId Int?
+}
+
+model Category {
+  category String @unique
+
+  Project           Project? @relation(fields: [projectProject_id], references: [project_id])
+  projectProject_id Int?
+}
+
+model Project {
+  created_time DateTime
+
+  project_id             Int     @id @default(autoincrement())
+  chain_ids              Chain[]
+  // addresses
+  smart_contract_address String  @unique
+  // circle
+  deposit_wallet_address String  @unique
+  deposit_wallet_id      String  @unique
+
+  status          String
+  category        Category[]
+  project_details String
+  project_title   String
+
+  completion_time DateTime
+  goal_time       DateTime
+  targeted_amount Decimal
+  raised_amount   Decimal
+
+  project_owners User[]
+  Donations      Donations[]
+
+  images Project_images[]
+  //TODO: add card
+}
+
+model Project_images {
+  id  Int    @id @default(autoincrement())
+  // cdn
+  url String @unique
+
+  Project           Project? @relation(fields: [projectProject_id], references: [project_id])
+  projectProject_id Int?
+}
+
+model Donations {
+  id                BigInt  @id @default(autoincrement())
+  user_id           User    @relation(fields: [userId], references: [id])
+  project_id        Project @relation(fields: [projectProject_id], references: [project_id])
+  userId            Int
+  projectProject_id Int
 }
