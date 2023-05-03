@@ -22,7 +22,9 @@ export default async function handler(
         })
         return
     }
-    await createUserCircleWallet(req.body)
+    const { address } = req.body
+    const validateAddress = address.toLowerCase()
+    await createUserCircleWallet({ address: validateAddress })
     res.status(200).json({
         message: 'user and wallet created!',
     })

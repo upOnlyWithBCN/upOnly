@@ -42,16 +42,6 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
                 <div className={styles.center}>
                     <Stack direction="column">
                         <ProfileCard />
-                        {test}
-                        {/* {test}
-                        <div>{response}</div>
-                        <SimpleGrid
-                            spacing={4}
-                            templateColumns="repeat(auto-fill, minmax(200px, 1fr))"
-                        >
-                            <ExchangeRateCard pair="ETH-USD" rate={ethUSD} />
-                            <ExchangeRateCard pair="BTC-USD" rate={btcUSD} />
-    </SimpleGrid>*/}
                     </Stack>
                 </div>
             </main>
