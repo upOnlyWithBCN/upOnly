@@ -1,3 +1,4 @@
+import { INITIAL_STATE } from '@/context/constants'
 import { Circle, CircleEnvironments } from '@circle-fin/circle-sdk'
 import { PrismaClient } from '@prisma/client'
 
@@ -34,10 +35,17 @@ export const returnExchangePair = (
     }
 }
 
-
 const primsaInstance = () => {
-    const client = new PrismaClient();
-    return client;
+    const client = new PrismaClient()
+    return client
 }
 
-export const prismaClient = primsaInstance();
+export const prismaClient = primsaInstance()
+
+export enum PROJECT_STATUS {
+    INITIAL = 'INITIAL',
+    FUNDING = 'FUNDING',
+    FUNDING_COMPLETE = 'FUNDING_COMPLETE',
+    FUNDING_FAILED = 'FUNDING_FAILED',
+    REJECTED = 'REJECTED',
+}

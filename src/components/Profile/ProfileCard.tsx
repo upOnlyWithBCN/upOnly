@@ -81,19 +81,19 @@ const ProfileCard = ({}: ProfileCardProps) => {
                             <StatHelpText>{currentAccount}</StatHelpText>
                         </Stat>
                         <Stat>
-                            <StatLabel>UpOnly Wallet address</StatLabel>
+                            <StatLabel>Circle Wallet address</StatLabel>
                             <StatHelpText>
                                 {user.deposit_wallet?.deposit_wallet_address}
                             </StatHelpText>
                         </Stat>
                         <Stat>
-                            <StatLabel>UpOnly Wallet ID</StatLabel>
+                            <StatLabel>Circle Wallet ID</StatLabel>
                             <StatHelpText>
                                 {user.deposit_wallet?.deposit_wallet_id}
                             </StatHelpText>
                         </Stat>
                         <Stat>
-                            <StatLabel>UpOnly User ID</StatLabel>
+                            <StatLabel>Circle User ID</StatLabel>
                             <StatHelpText>{user.id}</StatHelpText>
                         </Stat>
                         <Text></Text>
