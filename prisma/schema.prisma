@@ -49,22 +49,34 @@ model Project {
   chain_ids              Chain[]
   // addresses
   smart_contract_address String  @unique
-
-  deposit_wallet_address String @unique
-  deposit_wallet_id      String @unique
+  // circle
+  deposit_wallet_address String  @unique
+  deposit_wallet_id      String  @unique
 
   status          String
   category        Category[]
   project_details String
   project_title   String
 
-  expiry_time     DateTime
+  completion_time DateTime
+  goal_time       DateTime
   targeted_amount Decimal
-  amount_raised   Decimal
+  raised_amount   Decimal
 
   project_owners User[]
   Donations      Donations[]
+
+  images Project_images[]
   //TODO: add card
+}
+
+model Project_images {
+  id  Int    @id @default(autoincrement())
+  // cdn
+  url String @unique
+
+  Project           Project? @relation(fields: [projectProject_id], references: [project_id])
+  projectProject_id Int?
 }
 
 model Donations {
