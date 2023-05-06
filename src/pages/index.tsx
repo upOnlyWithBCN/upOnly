@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, SimpleGrid, Stack } from '@chakra-ui/react'
 import { circleObject } from '@/server/constants'
 import dynamic from 'next/dynamic'
+import ProjectsView from '@/components/Projects/ProjectsView'
 
 const ProfileCard = dynamic(() => import('../components/Profile/ProfileCard'), {
     ssr: false,
@@ -37,6 +38,7 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
                 <div className={styles.center}>
                     <Stack direction="column">
                         <ProfileCard />
+                        <ProjectsView />
                     </Stack>
                 </div>
             </main>
