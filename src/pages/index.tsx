@@ -6,8 +6,13 @@ import React, { useEffect, useState } from 'react'
 import { Button, SimpleGrid, Stack } from '@chakra-ui/react'
 import { circleObject } from '@/server/constants'
 import dynamic from 'next/dynamic'
+import { useSession } from 'next-auth/react'
 
 const ProfileCard = dynamic(() => import('../components/Profile/ProfileCard'), {
+    ssr: false,
+})
+
+const SignInCard = dynamic(() => import('../components/SignInCard'), {
     ssr: false,
 })
 
@@ -19,6 +24,7 @@ type HOMEProps = {
 }
 
 export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
+    const { data: session, status } = useSession()
     const [response, setResponse] = useState<string>('')
 
     const onClick = async (event: React.MouseEvent) => {
@@ -36,7 +42,7 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
             <main className={styles.main}>
                 <div className={styles.center}>
                     <Stack direction="column">
-                        <ProfileCard />
+                        {!session ? <SignInCard /> : <ProfileCard />}
                     </Stack>
                 </div>
             </main>

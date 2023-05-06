@@ -1,8 +1,8 @@
 .container {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  padding: 1rem;
-  background-color: var(--background-end-rgb);
-  gap: 16px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--background-end-rgb);
+    gap: 16px;
 }
