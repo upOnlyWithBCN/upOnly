@@ -15,50 +15,46 @@ import {
 } from '@chakra-ui/react'
 import styles from './navbar.module.css'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
-import { useWeb3Context } from '@/context/useWeb3Context'
-import { useState } from 'react'
-import { isUserConnected } from '@/context/utils'
+import { getCsrfToken, useSession, signOut } from 'next-auth/react'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+
 export type navbarProps = {}
 
 const Navbar = (props: navbarProps) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const { address, isConnected } = useAccount()
+    const { connect } = useConnect({
+        connector: new InjectedConnector(),
+    })
+    const { disconnect } = useDisconnect()
+    const { data: session, status } = useSession()
+
+    // const [isLoading, setIsLoading] = useState<boolean>(false)
     const { colorMode, toggleColorMode } = useColorMode()
     const { isOpen, onOpen, onClose } = useDisclosure()
-    const { web3State, connectFromWindowMM, disconnectFromWindowMM } =
-        useWeb3Context()
-    const { connectionState, currentAccount, chainID } = web3State
 
-    const connectMetaMask = async (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
-        e.preventDefault()
-        try {
-            setIsLoading(true)
-            await connectFromWindowMM()
-        } catch (e) {
-            console.error(e)
-            //TODO: handle error gracefully
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    const disconnectMetamask = async (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>
-    ) => {
-        e.preventDefault()
-        await disconnectFromWindowMM()
-    }
-
+    //MetaMask does not support programmatic disconnect. This flag simulates the disconnect behavior by keeping track of connection status in storage.
     const disconnectButton = (
-        <Button colorScheme="red" onClick={disconnectMetamask}>
+        <Button colorScheme="red" onClick={() => disconnect()}>
             Disconnect Wallet
         </Button>
     )
 
-    const connectionAccountBadge = isUserConnected(connectionState) ? (
+    const signoutButton = (
+        <Button
+            colorScheme="red"
+            onClick={(e) => {
+                e.preventDefault()
+                signOut()
+            }}
+        >
+            Sign Out
+        </Button>
+    )
+
+    const connectionAccountBadge = isConnected ? (
         <Badge colorScheme={'green'}>
-            {currentAccount.substring(0, Math.min(4, currentAccount.length))}
+            {address!.substring(0, Math.min(6, address!.length))}
         </Badge>
     ) : (
         <Badge colorScheme={'red'}>{'Not Connected'}</Badge>
@@ -71,9 +67,12 @@ const Navbar = (props: navbarProps) => {
                 icon={colorMode === 'dark' ? <MoonIcon /> : <SunIcon />}
                 onClick={toggleColorMode}
             />
-
-            {isUserConnected(connectionState) ? (
-                disconnectButton
+            {isConnected ? (
+                !session ? (
+                    disconnectButton
+                ) : (
+                    signoutButton
+                )
             ) : (
                 <>
                     <Button colorScheme="purple" onClick={onOpen}>
@@ -89,8 +88,8 @@ const Navbar = (props: navbarProps) => {
                                     <Button
                                         colorScheme="purple"
                                         onClick={(e) => {
-                                            connectMetaMask(e)
-                                            onClose()
+                                            e.preventDefault()
+                                            connect()
                                         }}
                                     >
                                         Metamask
@@ -116,6 +115,15 @@ const Navbar = (props: navbarProps) => {
             </Stack>
         </div>
     )
+}
+
+// not needed?
+export async function getServerSideProps(context: any) {
+    return {
+        props: {
+            csrfToken: await getCsrfToken(context),
+        },
+    }
 }
 
 export default Navbar
