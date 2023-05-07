@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { UserData, getUser } from '../user/[address]'
-import { circleObject, prismaClient } from '@/server/constants'
+import { PROJECT_STATUS, circleObject, prismaClient } from '@/server/constants'
 import { Project } from '@prisma/client'
 
 type CreateProjectData = {
@@ -36,41 +36,78 @@ export default async function createProjectHandler(
     }
 }
 const createProject = async (inputData: CreateProjectData) => {
+    const {
+        project_data: {
+            project_details,
+            project_title,
+            goal_time,
+            completion_time,
+            targeted_amount,
+            raised_amount,
+            category,
+        },
+    } = inputData
     const { deposit_wallet_address, deposit_wallet_id } =
         await createDepositWalletAddressAndWalletIdUsingCircle(inputData)
+    // create single project and many categories
+    const { project_id } = await prismaClient.project.create({
+        data: {
+            created_time: Date.now().toString(),
+            status: PROJECT_STATUS.INITIAL,
+            project_details,
+            project_title,
 
-    // create smart contract address?
+            goal_time: goal_time,
+            completion_time: completion_time,
+            targeted_amount,
+            raised_amount,
+
+            //TODO: change this
+
+            smart_contract_address: deposit_wallet_address,
+            deposit_wallet_address: deposit_wallet_address,
+            deposit_wallet_id,
+            category: {
+                create: category.map((x) => ({
+                    category: x,
+                })),
+            },
+        },
+        include: {
+            category: true,
+        },
+    })
 }
 
 const createDepositWalletAddressAndWalletIdUsingCircle = async (
     inputData: CreateProjectData
 ) => {
-    const { project_data } = inputData
+    const { project_data, project_owner_id } = inputData
     // create circle Deposit wallet
     const nonce = crypto.randomUUID()
-    try {
-        const res = await circleObject.wallets.createWallet({
-            idempotencyKey: nonce,
-            description: `Circle wallet address for project ${project_data.project_title} and owner ${project_owner_id}`,
-        })
-        const {
-            data: { data },
-        } = res
-        if (data) {
-            const { walletId } = data
-            if (walletId) {
-                const blockchainAddress = await createCircleBlockchainAddress(
-                    walletId
-                )
+
+    const res = await circleObject.wallets.createWallet({
+        idempotencyKey: nonce,
+        description: `Circle wallet address for project ${project_data.project_title} and owner ${project_owner_id}`,
+    })
+    const {
+        data: { data },
+    } = res
+    if (data) {
+        const { walletId } = data
+        if (walletId) {
+            const blockchainAddress = await createCircleBlockchainAddress(
+                walletId
+            )
+            if (blockchainAddress && blockchainAddress.address) {
                 return {
-                    deposit_wallet_address: blockchainAddress,
+                    deposit_wallet_address: blockchainAddress.address,
                     deposit_wallet_id: walletId,
                 }
             }
         }
-    } catch (e) {
-        console.error(e)
     }
+    throw new Error('Circle creation api failure')
 }
 
 const createCircleBlockchainAddress = async (walletId: string) => {

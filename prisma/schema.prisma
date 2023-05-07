@@ -29,21 +29,19 @@ model Deposit_wallet {
 }
 
 model Chain {
-  chain_id String @unique
-
-  Project   Project? @relation(fields: [projectId], references: [project_id])
-  projectId Int?
+  id       Int       @id @default(autoincrement())
+  chain_id String    @unique
+  projects Project[]
 }
 
 model Category {
-  category String @unique
-
-  Project           Project? @relation(fields: [projectProject_id], references: [project_id])
-  projectProject_id Int?
+  id       Int       @id @default(autoincrement())
+  category String
+  projects Project[]
 }
 
 model Project {
-  created_time DateTime
+  created_time DateTime @default(now())
 
   project_id             Int     @id @default(autoincrement())
   chain_ids              Chain[]
