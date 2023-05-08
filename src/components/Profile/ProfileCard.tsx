@@ -22,27 +22,32 @@ import {
     StackDivider,
     Stack,
 } from '@chakra-ui/react'
+import { getCsrfToken, signIn, useSession, signOut } from 'next-auth/react'
+import {
+    useAccount,
+    useConnect,
+    useNetwork,
+    useSignMessage,
+    useDisconnect,
+} from 'wagmi'
 import { useState } from 'react'
 
 export type ProfileCardProps = {}
 
 const ProfileCard = ({}: ProfileCardProps) => {
-    const { web3State, setDataFromWindowMM } = useWeb3Context()
-    const { currentAccount, user } = web3State
+    const { address, isConnected } = useAccount()
+    const { data: session, status } = useSession()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const onClick = async () => {
         setIsLoading(true)
         try {
-            const { message } = await signUpWithCircle(currentAccount)
-            console.log(message)
-            setDataFromWindowMM(currentAccount)
+            const { message } = await signUpWithCircle(address!)
         } catch (err) {
             console.log(err)
         } finally {
             setIsLoading(false)
         }
     }
-
     return (
         <Card maxW="md">
             <CardHeader>
@@ -60,7 +65,7 @@ const ProfileCard = ({}: ProfileCardProps) => {
                 </Flex>
             </CardHeader>
             <CardBody>
-                {user == null ? (
+                {session?.deposit_wallet == null ? (
                     <>
                         <Text>
                             Looks like you havent signed up with up only
@@ -78,23 +83,23 @@ const ProfileCard = ({}: ProfileCardProps) => {
                     <Stack divider={<StackDivider />} spacing="4">
                         <Stat>
                             <StatLabel>Your Current Wallet address</StatLabel>
-                            <StatHelpText>{currentAccount}</StatHelpText>
+                            <StatHelpText>{session.address}</StatHelpText>
                         </Stat>
                         <Stat>
                             <StatLabel>Circle Wallet address</StatLabel>
                             <StatHelpText>
-                                {user.deposit_wallet?.deposit_wallet_address}
+                                {session.deposit_wallet?.deposit_wallet_address}
                             </StatHelpText>
                         </Stat>
                         <Stat>
                             <StatLabel>Circle Wallet ID</StatLabel>
                             <StatHelpText>
-                                {user.deposit_wallet?.deposit_wallet_id}
+                                {session.deposit_wallet?.deposit_wallet_id}
                             </StatHelpText>
                         </Stat>
                         <Stat>
-                            <StatLabel>Circle User ID</StatLabel>
-                            <StatHelpText>{user.id}</StatHelpText>
+                            <StatLabel>Name</StatLabel>
+                            <StatHelpText>{session.name}</StatHelpText>
                         </Stat>
                         <Text></Text>
                     </Stack>
