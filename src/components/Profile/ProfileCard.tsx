@@ -23,17 +23,25 @@ import {
     Stack,
 } from '@chakra-ui/react'
 import { useState } from 'react'
+import {
+    useAccount,
+    useConnect,
+    useNetwork,
+    useSignMessage,
+    useDisconnect,
+} from 'wagmi'
 
 export type ProfileCardProps = {}
 
 const ProfileCard = ({}: ProfileCardProps) => {
     const { web3State, setDataFromWindowMM } = useWeb3Context()
     const { currentAccount, user } = web3State
+    const { address, isConnected } = useAccount()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const onClick = async () => {
         setIsLoading(true)
         try {
-            const { message } = await signUpWithCircle(currentAccount)
+            const { message } = await signUpWithCircle(address!)
             console.log(message)
             setDataFromWindowMM(currentAccount)
         } catch (err) {

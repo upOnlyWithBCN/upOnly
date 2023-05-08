@@ -14,6 +14,7 @@ model User {
   id             Int             @id @default(autoincrement())
   // user metamask wallet address
   address        String          @unique
+  name           String?
   // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/one-to-one-relations
   deposit_wallet Deposit_wallet?
   projects_owned Project[]
