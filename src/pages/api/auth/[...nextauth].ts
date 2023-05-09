@@ -77,7 +77,7 @@ export default async function auth(req: any, res: any) {
                 })
                 // no account or no circle account
                 if (user === null) {
-                    await createUserCircleWallet(address)
+                    await createUserCircleWallet({ address })
                     user = await prismaClient.user.findFirst({
                         include: {
                             deposit_wallet: true,

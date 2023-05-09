@@ -45,7 +45,6 @@ const findUserByAddress = async ({ address }: InputData) => {
     return null
 }
 
-// shouldn't be needed
 const createUserSingle = async ({ address }: InputData) => {
     const user = await prismaClient.user.create({
         data: {
@@ -98,9 +97,9 @@ const createUserDepositWallet = async ({
  * @returns void
  */
 export const createUserCircleWallet = async (inputData: InputData) => {
-    const user =
-        (await findUserByAddress(inputData)) ??
-        (await createUserSingle(inputData))
+    const user = await createUserSingle(inputData)
+    // (await findUserByAddress(inputData)) ??
+    // (await createUserSingle(inputData))
 
     const id = user.id
     const nonce = crypto.randomUUID()

@@ -1,5 +1,4 @@
 import { CONNECTION_STATE } from '@/context/constants'
-import { useWeb3Context } from '@/context/useWeb3Context'
 import { signUpWithCircle } from '@/server/actions'
 import {
     Card,
@@ -23,13 +22,7 @@ import {
     Stack,
 } from '@chakra-ui/react'
 import { getCsrfToken, signIn, useSession, signOut } from 'next-auth/react'
-import {
-    useAccount,
-    useConnect,
-    useNetwork,
-    useSignMessage,
-    useDisconnect,
-} from 'wagmi'
+import { useAccount } from 'wagmi'
 import { useState } from 'react'
 
 export type ProfileCardProps = {}

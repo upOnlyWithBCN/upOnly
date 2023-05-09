@@ -7,6 +7,7 @@ declare module 'next-auth' {
         token: string
         address: string
         user: string
+        name: string
         deposit_wallet: DepositWallet
     }
 

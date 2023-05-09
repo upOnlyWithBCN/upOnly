@@ -1,5 +1,4 @@
 import { CONNECTION_STATE } from '@/context/constants'
-import { useWeb3Context } from '@/context/useWeb3Context'
 import { signUpWithCircle } from '@/server/actions'
 import { getCsrfToken, signIn, useSession, signOut } from 'next-auth/react'
 import { SiweMessage } from 'siwe'
@@ -141,7 +140,7 @@ const SignInCard = ({}: SignInCardProps) => {
                         </>
                     )}
                 </Center>
-                {!session ? '' : <div>You are signed in</div>}
+                {!session ? <></> : <div>You are signed in</div>}
                 {/* {user == null ? (
                     <>
                         <Text>

@@ -33,18 +33,16 @@ export default function App({
     return (
         <ChakraProvider theme={theme}>
             <WagmiConfig client={client}>
-                <Web3Network>
-                    <SessionProvider
-                        session={pageProps.session}
-                        refetchInterval={0}
-                    >
-                        <CircleAPIContext>
-                            <ClientNavbar />
-                            <Component {...pageProps} />
-                            <Footer />
-                        </CircleAPIContext>
-                    </SessionProvider>
-                </Web3Network>
+                <SessionProvider
+                    session={pageProps.session}
+                    refetchInterval={0}
+                >
+                    <CircleAPIContext>
+                        <ClientNavbar />
+                        <Component {...pageProps} />
+                        <Footer />
+                    </CircleAPIContext>
+                </SessionProvider>
             </WagmiConfig>
         </ChakraProvider>
     )
