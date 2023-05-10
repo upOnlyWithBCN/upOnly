@@ -9,10 +9,10 @@ type CreateProjectData = {
         project_details: string
         project_title: string
 
-        completion_time: Date
-        goal_time: Date
+        completion_time: number
+        goal_time: number
+
         targeted_amount: number
-        raised_amount: number
 
         category: string[]
 
@@ -22,17 +22,24 @@ type CreateProjectData = {
 
 export default async function createProjectHandler(
     req: NextApiRequest,
-    res: NextApiResponse<CreateProjectData>
+    res: NextApiResponse<Project>
 ) {
-    const { query, method } = req
-    const data = query.body as unknown as CreateProjectData
+    const { body, method } = req
+    try {
+        const data = body as unknown as CreateProjectData
 
-    switch (method) {
-        case 'POST':
-
-        default:
-            res.setHeader('Allow', ['POST'])
-            res.status(405).end(`Method ${method} Not Allowed`)
+        switch (method) {
+            case 'POST':
+                const createdProject = await createProject(data)
+                res.status(200).json({ ...createdProject })
+                break
+            default:
+                res.setHeader('Allow', ['POST'])
+                res.status(405).end(`Method ${method} Not Allowed`)
+        }
+    } catch (e) {
+        console.log(e)
+        res.status(500).end('something went wrong')
     }
 }
 const createProject = async (inputData: CreateProjectData) => {
@@ -43,24 +50,25 @@ const createProject = async (inputData: CreateProjectData) => {
             goal_time,
             completion_time,
             targeted_amount,
-            raised_amount,
+
             category,
         },
     } = inputData
     const { deposit_wallet_address, deposit_wallet_id } =
         await createDepositWalletAddressAndWalletIdUsingCircle(inputData)
+    console.log('deposit_wallet_address', deposit_wallet_address)
+    console.log('deposit_wallet_id', deposit_wallet_id)
     // create single project and many categories
-    const { project_id } = await prismaClient.project.create({
+    const project = await prismaClient.project.create({
         data: {
-            created_time: Date.now().toString(),
             status: PROJECT_STATUS.INITIAL,
             project_details,
             project_title,
 
-            goal_time: goal_time,
-            completion_time: completion_time,
+            goal_time: new Date(goal_time),
+            completion_time: new Date(completion_time),
             targeted_amount,
-            raised_amount,
+            raised_amount: 0,
 
             //TODO: change this
 
@@ -77,6 +85,8 @@ const createProject = async (inputData: CreateProjectData) => {
             category: true,
         },
     })
+    console.log('created project', project)
+    return project
 }
 
 const createDepositWalletAddressAndWalletIdUsingCircle = async (
