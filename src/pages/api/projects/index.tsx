@@ -12,8 +12,8 @@ export default async function projectsHandler(
     res: NextApiResponse<ProjectsData>
 ) {
     const { query, method } = req
-    const page = parseInt(query.page as string)
-    const pageSize = parseInt(query.page as string)
+    const page = parseInt((query.page as string) ?? 1)
+    const pageSize = parseInt((query.page as string) ?? 10)
 
     switch (method) {
         case 'GET':

@@ -3,7 +3,7 @@ import { UserData, getUser } from '../user/[address]'
 import { PROJECT_STATUS, circleObject, prismaClient } from '@/server/constants'
 import { Project } from '@prisma/client'
 
-type CreateProjectData = {
+export type CreateProjectData = {
     project_owner_id: number
     project_data: {
         project_details: string
@@ -53,6 +53,7 @@ const createProject = async (inputData: CreateProjectData) => {
 
             category,
         },
+        project_owner_id,
     } = inputData
     const { deposit_wallet_address, deposit_wallet_id } =
         await createDepositWalletAddressAndWalletIdUsingCircle(inputData)
@@ -69,9 +70,6 @@ const createProject = async (inputData: CreateProjectData) => {
             completion_time: new Date(completion_time),
             targeted_amount,
             raised_amount: 0,
-
-            //TODO: change this
-
             smart_contract_address: deposit_wallet_address,
             deposit_wallet_address: deposit_wallet_address,
             deposit_wallet_id,
@@ -86,6 +84,20 @@ const createProject = async (inputData: CreateProjectData) => {
         },
     })
     console.log('created project', project)
+
+    const res = await prismaClient.user.update({
+        where: {
+            id: project_owner_id,
+        },
+        data: {
+            projects_owned: {
+                connect: {
+                    project_id: project.project_id,
+                },
+            },
+        },
+    })
+
     return project
 }
 

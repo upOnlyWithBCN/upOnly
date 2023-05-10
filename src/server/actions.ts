@@ -1,5 +1,7 @@
+import { CreateProjectData } from '@/pages/api/projects/create'
 import { CreateUserResponse } from '@/pages/api/user'
 import { UserData } from '@/pages/api/user/[address]'
+import { Project } from '@prisma/client'
 
 export async function fetchUserDataFromPrisma(address: string) {
     const response = (await (
@@ -24,15 +26,28 @@ export async function signUpWithCircle(address: string) {
     return response
 }
 
-export async function createProject() {
-    const response = await (
+export async function getProjects(page: number, pageSize: number) {
+    const response = (await (
+        await fetch(
+            './api/projects' +
+                new URLSearchParams({
+                    page: page + '',
+                    pageSize: pageSize + '',
+                })
+        )
+    ).json()) as [Project]
+    return response
+}
+
+export async function createProject(data: CreateProjectData) {
+    const response = (await (
         await fetch(`./api/projects/create`, {
             method: 'POST',
-            body: JSON.stringify({}),
+            body: JSON.stringify({ data }),
             headers: {
                 'Content-Type': 'application/json',
             },
         })
-    ).json()
+    ).json()) as Project
     return response
 }
