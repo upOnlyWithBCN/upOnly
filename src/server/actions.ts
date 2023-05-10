@@ -1,3 +1,4 @@
+import { GetProjectsData } from '@/pages/api/projects'
 import { CreateProjectData } from '@/pages/api/projects/create'
 import { CreateUserResponse } from '@/pages/api/user'
 import { UserData } from '@/pages/api/user/[address]'
@@ -26,16 +27,21 @@ export async function signUpWithCircle(address: string) {
     return response
 }
 
+export async function getProject(project_id: number): Promise<Project> {
+    return await (await fetch('./api/projects/' + project_id)).json()
+}
+
 export async function getProjects(page: number, pageSize: number) {
     const response = (await (
         await fetch(
-            './api/projects' +
+            './api/projects?' +
                 new URLSearchParams({
                     page: page + '',
                     pageSize: pageSize + '',
                 })
         )
-    ).json()) as [Project]
+    ).json()) as GetProjectsData
+
     return response
 }
 

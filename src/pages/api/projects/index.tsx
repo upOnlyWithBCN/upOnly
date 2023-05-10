@@ -3,25 +3,23 @@ import { UserData, getUser } from '../user/[address]'
 import { prismaClient } from '@/server/constants'
 import { Project } from '@prisma/client'
 
-type ProjectsData = {
+export type GetProjectsData = {
     projects: Project[]
+    total: number
 }
 
 export default async function projectsHandler(
     req: NextApiRequest,
-    res: NextApiResponse<ProjectsData>
+    res: NextApiResponse<GetProjectsData>
 ) {
     const { query, method } = req
     const page = parseInt((query.page as string) ?? 1)
-    const pageSize = parseInt((query.page as string) ?? 10)
-
+    const pageSize = parseInt((query.pageSize as string) ?? 10)
     switch (method) {
         case 'GET':
-            const projects = await getProjects(page, pageSize)
+            const projectsResponse = await getProjects(page, pageSize)
             // Get data from your database
-            res.status(200).json({
-                projects,
-            })
+            res.status(200).json(projectsResponse)
             break
         default:
             res.setHeader('Allow', ['GET'])
@@ -36,5 +34,9 @@ const getProjects = async (page: number, pageSize: number) => {
         skip: skipPage * pageSize,
         take: pageSize,
     })
-    return results
+    const projectSize = await prismaClient.project.count()
+    return {
+        projects: results,
+        total: projectSize,
+    }
 }
