@@ -28,7 +28,7 @@ const ProfileCard = ({ }: ProfileCardProps) => {
     const onClick = async () => {
         setIsLoading(true);
         try {
-            const { message } = await signUpWithCircle(address!);
+            await signUpWithCircle(address!)
         } catch (err) {
             console.log(err);
         } finally {

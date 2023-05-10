@@ -61,7 +61,7 @@ const Navbar = (props: navbarProps) => {
     ) : (
         <Badge colorScheme={'red'}>{'Not Connected'}</Badge>
     )
-    console.log(chain)
+
     const chainBadge = <Badge colorScheme={'green'}>{chain!.name}</Badge>
 
     return (
