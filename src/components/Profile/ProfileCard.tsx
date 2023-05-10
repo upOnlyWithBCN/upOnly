@@ -1,46 +1,40 @@
-import { CONNECTION_STATE } from '@/context/constants'
-import { signUpWithCircle } from '@/server/actions'
+import { signUpWithCircle } from '@/server/actions';
 import {
+    Avatar,
+    Box,
+    Button,
     Card,
+    CardBody,
     CardHeader,
     Flex,
-    Avatar,
     Heading,
-    IconButton,
-    CardBody,
-    CardFooter,
-    Button,
-    Box,
-    Text,
-    Image,
-    Divider,
-    Stat,
-    StatLabel,
-    StatNumber,
-    StatHelpText,
-    StackDivider,
     Stack,
-} from '@chakra-ui/react'
-import { getCsrfToken, signIn, useSession, signOut } from 'next-auth/react'
-import { useAccount } from 'wagmi'
-import { useState } from 'react'
+    StackDivider,
+    Stat,
+    StatHelpText,
+    StatLabel,
+    Text
+} from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
+import { useAccount } from 'wagmi';
 
-export type ProfileCardProps = {}
+export type ProfileCardProps = {};
 
-const ProfileCard = ({}: ProfileCardProps) => {
-    const { address, isConnected } = useAccount()
-    const { data: session, status } = useSession()
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+const ProfileCard = ({ }: ProfileCardProps) => {
+    const { address, isConnected } = useAccount();
+    const { data: session, status } = useSession();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const onClick = async () => {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
-            const { message } = await signUpWithCircle(address!)
+            const { message } = await signUpWithCircle(address!);
         } catch (err) {
-            console.log(err)
+            console.log(err);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
     return (
         <Card maxW="md">
             <CardHeader>
@@ -99,7 +93,7 @@ const ProfileCard = ({}: ProfileCardProps) => {
                 )}
             </CardBody>
         </Card>
-    )
-}
+    );
+};
 
-export default ProfileCard
+export default ProfileCard;
