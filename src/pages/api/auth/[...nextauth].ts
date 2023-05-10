@@ -1,9 +1,8 @@
+import { prismaClient } from '@/server/constants'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { getCsrfToken } from 'next-auth/react'
 import { SiweMessage } from 'siwe'
-import { PrismaClient } from '@prisma/client'
-import { prismaClient } from '@/server/constants'
+import { createUserCircleWallet } from '../user'
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 
@@ -62,19 +61,32 @@ export default async function auth(req: any, res: any) {
         secret: process.env.NEXTAUTH_SECRET,
         callbacks: {
             async session({ session, token }: { session: any; token: any }) {
-                const address = session.address as string
+                const address = token.sub.toLowerCase()
                 let user = await prismaClient.user.findFirst({
+                    include: {
+                        deposit_wallet: true,
+                    },
                     where: {
                         address,
                     },
                 })
-                if (user == null) {
-                    user = await prismaClient.user.create({
-                        data: { address: address },
+                // no account or no circle account
+                if (user === null) {
+                    await createUserCircleWallet({ address })
+                    user = await prismaClient.user.findFirst({
+                        include: {
+                            deposit_wallet: true,
+                        },
+                        where: {
+                            address,
+                        },
                     })
                 }
-                session.address = user.address
-                session.user.name = user.name ?? user.address
+
+                session.address = user!.address
+                session.name = user!.name ?? user!.address
+                session.deposit_wallet = user!.deposit_wallet
+                session.token = token
                 return session
             },
         },

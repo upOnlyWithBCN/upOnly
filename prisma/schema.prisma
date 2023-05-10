@@ -24,7 +24,7 @@ model User {
 model Deposit_wallet {
   user_id                Int    @unique
   deposit_wallet_address String @unique
-  deposit_wallet_id      String @unique
+  deposit_wallet_id      String @id @unique
   userId                 Int    @unique
   User                   User   @relation(fields: [userId], references: [id])
 }

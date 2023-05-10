@@ -9,7 +9,10 @@ import {
 } from './metamask'
 import { Web3CT } from './Web3Context'
 import { fetchUserDataFromPrisma } from '@/server/actions'
+import { watchAccount } from '@wagmi/core'
+import { getCsrfToken, useSession, signOut } from 'next-auth/react'
 
+// I think can remove, not sure what to do with managing change in chain / account
 export function useWeb3Context() {
     //TODO: implement read from cache
     const { web3State, setWeb3State } = useContext(Web3CT)
