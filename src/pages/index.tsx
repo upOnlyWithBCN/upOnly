@@ -31,7 +31,7 @@ type HOMEProps = {
 }
 
 export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
-    const { data: session, status } = useSession()
+    const { data: session, status, update } = useSession()
     const [response, setResponse] = useState<string>('')
 
     const onClick = async (event: React.MouseEvent) => {

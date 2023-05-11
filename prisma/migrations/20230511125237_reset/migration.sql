@@ -1,34 +1,8 @@
-/*
-  Warnings:
-
-  - You are about to drop the `accounts` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `sessions` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `users` table. If the table is not empty, all the data it contains will be lost.
-  - You are about to drop the `verificationtokens` table. If the table is not empty, all the data it contains will be lost.
-
-*/
--- DropForeignKey
-ALTER TABLE "accounts" DROP CONSTRAINT "accounts_user_id_fkey";
-
--- DropForeignKey
-ALTER TABLE "sessions" DROP CONSTRAINT "sessions_user_id_fkey";
-
--- DropTable
-DROP TABLE "accounts";
-
--- DropTable
-DROP TABLE "sessions";
-
--- DropTable
-DROP TABLE "users";
-
--- DropTable
-DROP TABLE "verificationtokens";
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" SERIAL NOT NULL,
     "address" TEXT NOT NULL,
+    "name" TEXT,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );
@@ -38,24 +12,30 @@ CREATE TABLE "Deposit_wallet" (
     "user_id" INTEGER NOT NULL,
     "deposit_wallet_address" TEXT NOT NULL,
     "deposit_wallet_id" TEXT NOT NULL,
-    "userId" INTEGER NOT NULL
+    "userId" INTEGER NOT NULL,
+
+    CONSTRAINT "Deposit_wallet_pkey" PRIMARY KEY ("deposit_wallet_id")
 );
 
 -- CreateTable
 CREATE TABLE "Chain" (
+    "id" SERIAL NOT NULL,
     "chain_id" TEXT NOT NULL,
-    "projectId" INTEGER
+
+    CONSTRAINT "Chain_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Category" (
+    "id" SERIAL NOT NULL,
     "category" TEXT NOT NULL,
-    "projectProject_id" INTEGER
+
+    CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "Project" (
-    "created_time" TIMESTAMP(3) NOT NULL,
+    "created_time" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "project_id" SERIAL NOT NULL,
     "smart_contract_address" TEXT NOT NULL,
     "deposit_wallet_address" TEXT NOT NULL,
@@ -90,6 +70,18 @@ CREATE TABLE "Donations" (
 );
 
 -- CreateTable
+CREATE TABLE "_ChainToProject" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_CategoryToProject" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "_ProjectToUser" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
@@ -114,9 +106,6 @@ CREATE UNIQUE INDEX "Deposit_wallet_userId_key" ON "Deposit_wallet"("userId");
 CREATE UNIQUE INDEX "Chain_chain_id_key" ON "Chain"("chain_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Category_category_key" ON "Category"("category");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Project_smart_contract_address_key" ON "Project"("smart_contract_address");
 
 -- CreateIndex
@@ -129,6 +118,18 @@ CREATE UNIQUE INDEX "Project_deposit_wallet_id_key" ON "Project"("deposit_wallet
 CREATE UNIQUE INDEX "Project_images_url_key" ON "Project_images"("url");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "_ChainToProject_AB_unique" ON "_ChainToProject"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_ChainToProject_B_index" ON "_ChainToProject"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_CategoryToProject_AB_unique" ON "_CategoryToProject"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_CategoryToProject_B_index" ON "_CategoryToProject"("B");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "_ProjectToUser_AB_unique" ON "_ProjectToUser"("A", "B");
 
 -- CreateIndex
@@ -138,12 +139,6 @@ CREATE INDEX "_ProjectToUser_B_index" ON "_ProjectToUser"("B");
 ALTER TABLE "Deposit_wallet" ADD CONSTRAINT "Deposit_wallet_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Chain" ADD CONSTRAINT "Chain_projectId_fkey" FOREIGN KEY ("projectId") REFERENCES "Project"("project_id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Category" ADD CONSTRAINT "Category_projectProject_id_fkey" FOREIGN KEY ("projectProject_id") REFERENCES "Project"("project_id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Project_images" ADD CONSTRAINT "Project_images_projectProject_id_fkey" FOREIGN KEY ("projectProject_id") REFERENCES "Project"("project_id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -151,6 +146,18 @@ ALTER TABLE "Donations" ADD CONSTRAINT "Donations_userId_fkey" FOREIGN KEY ("use
 
 -- AddForeignKey
 ALTER TABLE "Donations" ADD CONSTRAINT "Donations_projectProject_id_fkey" FOREIGN KEY ("projectProject_id") REFERENCES "Project"("project_id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ChainToProject" ADD CONSTRAINT "_ChainToProject_A_fkey" FOREIGN KEY ("A") REFERENCES "Chain"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ChainToProject" ADD CONSTRAINT "_ChainToProject_B_fkey" FOREIGN KEY ("B") REFERENCES "Project"("project_id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CategoryToProject" ADD CONSTRAINT "_CategoryToProject_A_fkey" FOREIGN KEY ("A") REFERENCES "Category"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_CategoryToProject" ADD CONSTRAINT "_CategoryToProject_B_fkey" FOREIGN KEY ("B") REFERENCES "Project"("project_id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "_ProjectToUser" ADD CONSTRAINT "_ProjectToUser_A_fkey" FOREIGN KEY ("A") REFERENCES "Project"("project_id") ON DELETE CASCADE ON UPDATE CASCADE;
