@@ -1,48 +1,40 @@
-import { CONNECTION_STATE } from '@/context/constants'
-import { useWeb3Context } from '@/context/useWeb3Context'
-import { signUpWithCircle } from '@/server/actions'
+import { signUpWithCircle } from '@/server/actions';
 import {
+    Avatar,
+    Box,
+    Button,
     Card,
+    CardBody,
     CardHeader,
     Flex,
-    Avatar,
     Heading,
-    IconButton,
-    CardBody,
-    CardFooter,
-    Button,
-    Box,
-    Text,
-    Image,
-    Divider,
-    Stat,
-    StatLabel,
-    StatNumber,
-    StatHelpText,
-    StackDivider,
     Stack,
-} from '@chakra-ui/react'
-import { useState } from 'react'
+    StackDivider,
+    Stat,
+    StatHelpText,
+    StatLabel,
+    Text
+} from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
+import { useAccount } from 'wagmi';
 
-export type ProfileCardProps = {}
+export type ProfileCardProps = {};
 
-const ProfileCard = ({}: ProfileCardProps) => {
-    const { web3State, setDataFromWindowMM } = useWeb3Context()
-    const { currentAccount, user } = web3State
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+const ProfileCard = ({ }: ProfileCardProps) => {
+    const { address, isConnected } = useAccount();
+    const { data: session, status } = useSession();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const onClick = async () => {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
-            const { message } = await signUpWithCircle(currentAccount)
-            console.log(message)
-            setDataFromWindowMM(currentAccount)
+            await signUpWithCircle(address!)
         } catch (err) {
-            console.log(err)
+            console.log(err);
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
-
+    };
     return (
         <Card maxW="md">
             <CardHeader>
@@ -60,7 +52,7 @@ const ProfileCard = ({}: ProfileCardProps) => {
                 </Flex>
             </CardHeader>
             <CardBody>
-                {user == null ? (
+                {session?.deposit_wallet == null ? (
                     <>
                         <Text>
                             Looks like you havent signed up with up only
@@ -78,30 +70,30 @@ const ProfileCard = ({}: ProfileCardProps) => {
                     <Stack divider={<StackDivider />} spacing="4">
                         <Stat>
                             <StatLabel>Your Current Wallet address</StatLabel>
-                            <StatHelpText>{currentAccount}</StatHelpText>
+                            <StatHelpText>{session.address}</StatHelpText>
                         </Stat>
                         <Stat>
                             <StatLabel>Circle Wallet address</StatLabel>
                             <StatHelpText>
-                                {user.deposit_wallet?.deposit_wallet_address}
+                                {session.deposit_wallet?.deposit_wallet_address}
                             </StatHelpText>
                         </Stat>
                         <Stat>
                             <StatLabel>Circle Wallet ID</StatLabel>
                             <StatHelpText>
-                                {user.deposit_wallet?.deposit_wallet_id}
+                                {session.deposit_wallet?.deposit_wallet_id}
                             </StatHelpText>
                         </Stat>
                         <Stat>
-                            <StatLabel>Circle User ID</StatLabel>
-                            <StatHelpText>{user.id}</StatHelpText>
+                            <StatLabel>Name</StatLabel>
+                            <StatHelpText>{session.name}</StatHelpText>
                         </Stat>
                         <Text></Text>
                     </Stack>
                 )}
             </CardBody>
         </Card>
-    )
-}
+    );
+};
 
-export default ProfileCard
+export default ProfileCard;

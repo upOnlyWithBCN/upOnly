@@ -96,10 +96,10 @@ const createUserDepositWallet = async ({
  * @param inputData
  * @returns void
  */
-const createUserCircleWallet = async (inputData: InputData) => {
-    const user =
-        (await findUserByAddress(inputData)) ??
-        (await createUserSingle(inputData))
+export const createUserCircleWallet = async (inputData: InputData) => {
+    const user = await createUserSingle(inputData)
+    // (await findUserByAddress(inputData)) ??
+    // (await createUserSingle(inputData))
 
     const id = user.id
     const nonce = crypto.randomUUID()

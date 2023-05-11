@@ -1,15 +1,21 @@
+import { prismaClient } from '@/server/constants'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { getCsrfToken } from 'next-auth/react'
 import { SiweMessage } from 'siwe'
-
+import { createUserCircleWallet } from '../user'
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
+
 export default async function auth(req: any, res: any) {
     const providers = [
         CredentialsProvider({
             name: 'Ethereum',
             credentials: {
+                address: {
+                    label: 'Address',
+                    type: 'text',
+                    placeholder: '0x0',
+                },
                 message: {
                     label: 'Message',
                     type: 'text',
@@ -46,14 +52,6 @@ export default async function auth(req: any, res: any) {
         }),
     ]
 
-    const isDefaultSigninPage =
-        req.method === 'GET' && req.query.nextauth.includes('signin')
-
-    // Hide Sign-In with Ethereum from default sign page
-    if (isDefaultSigninPage) {
-        providers.pop()
-    }
-
     return await NextAuth(req, res, {
         // https://next-auth.js.org/configuration/providers/oauth
         providers,
@@ -63,9 +61,32 @@ export default async function auth(req: any, res: any) {
         secret: process.env.NEXTAUTH_SECRET,
         callbacks: {
             async session({ session, token }: { session: any; token: any }) {
-                session.address = token.sub
-                session.user.name = token.sub
-                session.user.image = 'https://www.fillmurray.com/128/128'
+                const address = token.sub.toLowerCase()
+                let user = await prismaClient.user.findFirst({
+                    include: {
+                        deposit_wallet: true,
+                    },
+                    where: {
+                        address,
+                    },
+                })
+                // no account or no circle account
+                if (user === null) {
+                    await createUserCircleWallet({ address })
+                    user = await prismaClient.user.findFirst({
+                        include: {
+                            deposit_wallet: true,
+                        },
+                        where: {
+                            address,
+                        },
+                    })
+                }
+
+                session.address = user!.address
+                session.name = user!.name ?? user!.address
+                session.deposit_wallet = user!.deposit_wallet
+                session.token = token
                 return session
             },
         },

@@ -11,7 +11,6 @@ import {
     Web3Context,
     LOCAL_STATE_KEY,
 } from './constants'
-
 ;('use client')
 
 export const Web3CT = createContext<Web3Context>({
@@ -19,6 +18,7 @@ export const Web3CT = createContext<Web3Context>({
     setWeb3State: () => {},
 })
 
+// I think can remove
 export default function Web3Network({
     children,
 }: {
