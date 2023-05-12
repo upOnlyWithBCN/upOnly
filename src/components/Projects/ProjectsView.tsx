@@ -53,48 +53,28 @@ const ProjectsView = ({}: ProfileCardProps) => {
     const [projects, setProjects] = useState<Array<Project>>([])
     const [totalProjects, setTotalProjects] = useState<number>(10)
     const [categories, setCategories] = useState<AggregatedCategory[]>([])
-    const [selectedCategories, setSelectedCategories] = useState<Set<string>>(
-        new Set()
-    )
-    const { value, getCheckboxProps } = useCheckboxGroup({
-        defaultValue: [],
-    })
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+
     useEffect(() => {
         const fetchCategories = async () => {
             const categoriesFromAPI = await getCategories()
             setCategories(categoriesFromAPI.categories)
-        }
-        const fetchProjects = async () => {
-            const projectsFromAPI = await getProjects(page, pageSize)
-            setProjects(projectsFromAPI.projects)
-            setTotalProjects(projectsFromAPI.total)
+            setSelectedCategories(
+                categoriesFromAPI.categories.map(({ category }) => category)
+            )
         }
         fetchCategories()
-        fetchProjects()
-    }, [page, pageSize])
+    }, [])
 
-    const handleForwardClick = () => {
-        if (totalProjects < page * pageSize) {
-            setPage(page + 1)
-        }
-    }
-
-    const handleBackwordClick = () => {
-        if (page > 1) {
-            setPage(pageSize - 1)
-        }
-    }
-
-    const onCategoryClick = (category: string) => {
-        console.log('click')
-        if (selectedCategories.has(category)) {
-            selectedCategories.delete(category)
+    const onCheckBoxClick = (category: string) => {
+        if (selectedCategories.filter((x) => x === category).length === 1) {
+            const filtered = selectedCategories.filter((x) => x !== category)
+            setSelectedCategories(filtered)
         } else {
-            selectedCategories.add(category)
+            const filtered = [...selectedCategories, category]
+            setSelectedCategories(filtered)
         }
-        setSelectedCategories(selectedCategories)
     }
-
     return (
         <Grid
             templateAreas={`
@@ -112,12 +92,12 @@ const ProjectsView = ({}: ProfileCardProps) => {
                         return (
                             <ListItem key={index}>
                                 <Checkbox
-                                    {...getCheckboxProps({
-                                        value: cat.category,
-                                    })}
+                                    defaultChecked={true}
                                     size="sm"
                                     colorScheme="red"
-                                    value={cat.category}
+                                    onChange={(e) =>
+                                        onCheckBoxClick(cat.category)
+                                    }
                                 >
                                     {cat.category}
                                 </Checkbox>
@@ -127,51 +107,86 @@ const ProjectsView = ({}: ProfileCardProps) => {
                 </List>
             </GridItem>
             <GridItem pl="2" area={'main'}>
-                <Stack direction="column" marginRight={24}>
-                    <Heading>View Available Projects</Heading>
-                    <SimpleGrid minChildWidth="200px" spacing="12px">
-                        {isLoading ? (
-                            <Spinner />
-                        ) : (
-                            projects.map((project) => (
-                                <GridItem w="100%">
-                                    <ProjectCard
-                                        project={project}
-                                        key={project.project_id}
-                                    />
-                                </GridItem>
-                            ))
-                        )}
-                    </SimpleGrid>
-                    {totalProjects > 10 ? (
-                        <Flex
-                            flexDirection={'row'}
-                            gap={12}
-                            justifyContent={'center'}
-                        >
-                            <IconButton
-                                colorScheme="teal"
-                                aria-label=""
-                                size="lg"
-                                icon={<ArrowLeftIcon />}
-                                onClick={handleBackwordClick}
-                                disabled={page <= 1}
-                            />
-                            <IconButton
-                                colorScheme="teal"
-                                size="lg"
-                                aria-label=""
-                                icon={<ArrowRightIcon />}
-                                onClick={handleForwardClick}
-                                disabled={totalProjects < page * pageSize}
-                            />
-                        </Flex>
-                    ) : (
-                        <></>
-                    )}
-                </Stack>
+                {categories.length === 0 ? (
+                    <></>
+                ) : (
+                    <ProjectList categories={selectedCategories} />
+                )}
             </GridItem>
         </Grid>
+    )
+}
+
+const ProjectList = ({ categories }: { categories: string[] }) => {
+    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [page, setPage] = useState<number>(1)
+    const [pageSize, setPageSize] = useState<number>(10)
+    const [projects, setProjects] = useState<Array<Project>>([])
+    const [totalProjects, setTotalProjects] = useState<number>(10)
+    useEffect(() => {
+        const fetchProjects = async () => {
+            setIsLoading(true)
+            const projectsFromAPI = await getProjects(
+                page,
+                pageSize,
+                categories
+            )
+            setProjects(projectsFromAPI.projects)
+            setTotalProjects(projectsFromAPI.total)
+            setIsLoading(false)
+        }
+
+        fetchProjects()
+    }, [page, pageSize, categories])
+
+    const handleForwardClick = () => {
+        if (totalProjects < page * pageSize) {
+            setPage(page + 1)
+        }
+    }
+
+    const handleBackwordClick = () => {
+        if (page > 1) {
+            setPage(pageSize - 1)
+        }
+    }
+    return (
+        <Stack direction="column" marginRight={24}>
+            <Heading>View Available Projects</Heading>
+            <SimpleGrid minChildWidth="200px" spacing="12px">
+                {isLoading ? (
+                    <Spinner />
+                ) : (
+                    projects.map((project) => (
+                        <GridItem w="100%" key={project.project_id}>
+                            <ProjectCard project={project} />
+                        </GridItem>
+                    ))
+                )}
+            </SimpleGrid>
+            {totalProjects > 10 ? (
+                <Flex flexDirection={'row'} gap={12} justifyContent={'center'}>
+                    <IconButton
+                        colorScheme="teal"
+                        aria-label=""
+                        size="lg"
+                        icon={<ArrowLeftIcon />}
+                        onClick={handleBackwordClick}
+                        disabled={page <= 1}
+                    />
+                    <IconButton
+                        colorScheme="teal"
+                        size="lg"
+                        aria-label=""
+                        icon={<ArrowRightIcon />}
+                        onClick={handleForwardClick}
+                        disabled={totalProjects < page * pageSize}
+                    />
+                </Flex>
+            ) : (
+                <></>
+            )}
+        </Stack>
     )
 }
 

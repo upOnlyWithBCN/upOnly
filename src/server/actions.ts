@@ -36,13 +36,18 @@ export async function getCategories(): Promise<GetCatagoriesData> {
     return await (await fetch('./api/category')).json()
 }
 
-export async function getProjects(page: number, pageSize: number) {
+export async function getProjects(
+    page: number,
+    pageSize: number,
+    categories: string[]
+) {
     const response = (await (
         await fetch(
             './api/projects?' +
                 new URLSearchParams({
                     page: page + '',
                     pageSize: pageSize + '',
+                    categories: JSON.stringify(categories),
                 })
         )
     ).json()) as GetProjectsData
