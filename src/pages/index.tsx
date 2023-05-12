@@ -3,7 +3,7 @@ import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 import { Circle, CircleEnvironments, Ping, Rate } from '@circle-fin/circle-sdk'
 import React, { useEffect, useState } from 'react'
-import { Button, SimpleGrid, Stack } from '@chakra-ui/react'
+import { Button, SimpleGrid, Stack, Grid, GridItem } from '@chakra-ui/react'
 import { circleObject } from '@/server/constants'
 import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'
@@ -16,6 +16,13 @@ const SignInCard = dynamic(() => import('../components/SignInCard'), {
     ssr: false,
 })
 
+const ProjectsView = dynamic(
+    () => import('../components/Projects/ProjectsView'),
+    {
+        ssr: false,
+    }
+)
+
 type HOMEProps = {
     rates: {
         ethUSD: Rate
@@ -24,7 +31,7 @@ type HOMEProps = {
 }
 
 export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
-    const { data: session, status } = useSession()
+    const { data: session, status, update } = useSession()
     const [response, setResponse] = useState<string>('')
 
     const onClick = async (event: React.MouseEvent) => {
@@ -40,11 +47,19 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
     return (
         <>
             <main className={styles.main}>
-                <div className={styles.center}>
-                    <Stack direction="column">
-                        {!session ? <SignInCard /> : <ProfileCard />}
-                    </Stack>
-                </div>
+                <Grid
+                    templateAreas={`
+                  "nav main"
+                `}
+                    gridTemplateRows={'50px 1fr 30px'}
+                    gridTemplateColumns={'150px 1fr'}
+                    h="90vh"
+                    gap="1"
+                >
+                    <GridItem pl="2" area={'main'}>
+                        <ProjectsView />
+                    </GridItem>
+                </Grid>
             </main>
         </>
     )
