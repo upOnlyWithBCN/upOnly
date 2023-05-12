@@ -40,11 +40,8 @@ const getProjects = async (
     pageSize: number,
     categories: string[]
 ) => {
-    console.log(categories)
-
     // offset based pagination, with no filtering
     const skipPage = Math.min(0, page - 1)
-
     const results = await prismaClient.project.findMany({
         skip: skipPage * pageSize,
         take: pageSize,
