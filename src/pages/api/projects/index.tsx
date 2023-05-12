@@ -27,7 +27,7 @@ export default async function projectsHandler(
     }
 }
 
-const getProjects = async (page: number, pageSize: number) => {
+const getProjects = async (page: number, pageSize: number, category = null) => {
     // offset based pagination, with no filtering
     const skipPage = Math.min(0, page - 1)
     const results = await prismaClient.project.findMany({

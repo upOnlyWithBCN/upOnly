@@ -1,3 +1,4 @@
+import { GetCatagoriesData } from '@/pages/api/category'
 import { GetProjectsData } from '@/pages/api/projects'
 import { CreateProjectData } from '@/pages/api/projects/create'
 import { CreateUserResponse } from '@/pages/api/user'
@@ -29,6 +30,10 @@ export async function signUpWithCircle(address: string) {
 
 export async function getProject(project_id: number): Promise<Project> {
     return await (await fetch('./api/projects/' + project_id)).json()
+}
+
+export async function getCategories(): Promise<GetCatagoriesData> {
+    return await (await fetch('./api/category')).json()
 }
 
 export async function getProjects(page: number, pageSize: number) {

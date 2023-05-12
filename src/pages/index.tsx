@@ -47,19 +47,7 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
     return (
         <>
             <main className={styles.main}>
-                <Grid
-                    templateAreas={`
-                  "nav main"
-                `}
-                    gridTemplateRows={'50px 1fr 30px'}
-                    gridTemplateColumns={'150px 1fr'}
-                    h="90vh"
-                    gap="1"
-                >
-                    <GridItem pl="2" area={'main'}>
-                        <ProjectsView />
-                    </GridItem>
-                </Grid>
+                <ProjectsView />
             </main>
         </>
     )
