@@ -6,9 +6,11 @@ import { CreateUserResponse } from '@/pages/api/user'
 import { UserData } from '@/pages/api/user/[address]'
 import { Project } from '@prisma/client'
 
+const base_url = process.env.BASE_URL_DEV
+
 export async function fetchUserDataFromPrisma(address: string) {
     const response = (await (
-        await fetch(`./api/user/${address}`)
+        await fetch(`${base_url}/api/user/${address}`)
     ).json()) as UserData
 
     return response
@@ -16,7 +18,7 @@ export async function fetchUserDataFromPrisma(address: string) {
 
 export async function signUpWithCircle(address: string) {
     const response = (await (
-        await fetch('./api/user', {
+        await fetch(`${base_url}/api/user`, {
             method: 'POST',
             body: JSON.stringify({
                 address: address,
@@ -32,12 +34,12 @@ export async function signUpWithCircle(address: string) {
 export async function getProject(project_id: number): Promise<GetProjectData> {
     console.log(project_id)
     return (await (
-        await fetch(`./api/projects/single/${project_id}`)
+        await fetch(`${base_url}/api/projects/single/${project_id}`)
     ).json()) as GetProjectData
 }
 
 export async function getCategories(): Promise<GetCatagoriesData> {
-    return await (await fetch('./api/category')).json()
+    return await (await fetch(`${base_url}/api/category`)).json()
 }
 
 export async function getProjects(
@@ -47,7 +49,7 @@ export async function getProjects(
 ) {
     const response = (await (
         await fetch(
-            './api/projects?' +
+            `${base_url}/api/projects?` +
                 new URLSearchParams({
                     page: page + '',
                     pageSize: pageSize + '',
@@ -60,10 +62,11 @@ export async function getProjects(
 }
 
 export async function createProject(data: CreateProjectData) {
+    console.log(base_url)
     const response = (await (
-        await fetch(`./api/projects/create`, {
+        await fetch(`${base_url}/api/projects/create`, {
             method: 'POST',
-            body: JSON.stringify({ data }),
+            body: JSON.stringify(data),
             headers: {
                 'Content-Type': 'application/json',
             },
