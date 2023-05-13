@@ -26,13 +26,13 @@ import Router, { useParams, useRouter } from 'next/navigation'
 import { Project } from '@prisma/client'
 import { getProjects } from '@/server/actions'
 
-export type ProjectCardProps = {
+export type ProjectCreateProps = {
     project: Project
 }
 
-const ProjectCard = ({
+const ProjectCreate = ({
     project: { project_title, project_details, project_id },
-}: ProjectCardProps) => {
+}: ProjectCreateProps) => {
     const router = useRouter()
     const onHandleViewProject = () => {
         router.push(`/projects/${project_id}`)
@@ -63,4 +63,4 @@ const ProjectCard = ({
     )
 }
 
-export default ProjectCard
+export default ProjectCreate

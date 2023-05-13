@@ -1,5 +1,6 @@
 import { GetCatagoriesData } from '@/pages/api/category'
 import { GetProjectsData } from '@/pages/api/projects'
+import { GetProjectData } from '@/pages/api/projects/[project_id]'
 import { CreateProjectData } from '@/pages/api/projects/create'
 import { CreateUserResponse } from '@/pages/api/user'
 import { UserData } from '@/pages/api/user/[address]'
@@ -28,8 +29,11 @@ export async function signUpWithCircle(address: string) {
     return response
 }
 
-export async function getProject(project_id: number): Promise<Project> {
-    return await (await fetch('./api/projects/' + project_id)).json()
+export async function getProject(project_id: number): Promise<GetProjectData> {
+    console.log(project_id)
+    return (await (
+        await fetch(`./api/projects/single/${project_id}`)
+    ).json()) as GetProjectData
 }
 
 export async function getCategories(): Promise<GetCatagoriesData> {
