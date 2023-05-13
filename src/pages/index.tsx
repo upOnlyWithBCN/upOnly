@@ -3,7 +3,14 @@ import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 import { Circle, CircleEnvironments, Ping, Rate } from '@circle-fin/circle-sdk'
 import React, { useEffect, useState } from 'react'
-import { Button, SimpleGrid, Stack, Grid, GridItem } from '@chakra-ui/react'
+import {
+    Button,
+    SimpleGrid,
+    Stack,
+    Grid,
+    GridItem,
+    Flex,
+} from '@chakra-ui/react'
 import { circleObject } from '@/server/constants'
 import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'

@@ -80,7 +80,7 @@ const ProjectsView = ({}: ProfileCardProps) => {
             templateAreas={`
                   "nav main"
                 `}
-            maxWidth={1200}
+            width={'1200'}
             gridTemplateRows={'50px 1fr 30px'}
             gridTemplateColumns={'200px 1fr'}
             h="80vh"
