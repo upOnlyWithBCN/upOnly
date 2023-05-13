@@ -2,6 +2,7 @@ import { GetProjectsData } from '@/pages/api/projects'
 import { CreateProjectData } from '@/pages/api/projects/create'
 import { CreateUserResponse } from '@/pages/api/user'
 import { UserData } from '@/pages/api/user/[address]'
+import { GetUserBalanceResponse } from '@/pages/api/wallet'
 import { Project } from '@prisma/client'
 
 export async function fetchUserDataFromPrisma(address: string) {
@@ -56,4 +57,11 @@ export async function createProject(data: CreateProjectData) {
         })
     ).json()) as Project
     return response
+}
+
+export async function getUserBalance() {
+    const res = (await (
+        await fetch('./api/wallet')
+    ).json()) as GetUserBalanceResponse
+    return res.usdBalance
 }

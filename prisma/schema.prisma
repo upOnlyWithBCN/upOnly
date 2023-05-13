@@ -82,6 +82,7 @@ model Donations {
   id                BigInt  @id @default(autoincrement())
   user_id           User    @relation(fields: [userId], references: [id])
   project_id        Project @relation(fields: [projectProject_id], references: [project_id])
+  amount_donated    Decimal
   userId            Int
   projectProject_id Int
 }
