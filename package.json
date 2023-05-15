@@ -16,6 +16,7 @@
         "@emotion/styled": "^11.10.6",
         "@metamask/detect-provider": "^2.0.0",
         "@next-auth/prisma-adapter": "^1.0.6",
+        "@openzeppelin/contracts": "^4.8.3",
         "@prisma/client": "^4.13.0",
         "@types/node": "18.15.11",
         "@types/react": "18.0.33",
@@ -34,6 +35,11 @@
         "web3": "^1.9.0"
     },
     "devDependencies": {
+        "@nomiclabs/hardhat-ethers": "^2.2.3",
+        "@types/chai": "^4.3.5",
+        "@types/mocha": "^10.0.1",
+        "chai": "^4.3.7",
+        "hardhat": "^2.14.0",
         "prisma": "^4.13.0"
     }
 }
