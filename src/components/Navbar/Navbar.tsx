@@ -15,10 +15,11 @@ import {
 } from '@chakra-ui/react'
 import styles from './navbar.module.css'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
-import { getCsrfToken, useSession, signOut } from 'next-auth/react'
+import { getCsrfToken, useSession, signOut, signIn } from 'next-auth/react'
 import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { avalanche, bsc, mainnet } from '@wagmi/core/chains'
+import { useEffect } from 'react'
 
 export type navbarProps = {}
 
@@ -29,7 +30,7 @@ const Navbar = (props: navbarProps) => {
     })
     const { chain, chains } = useNetwork()
     const { disconnect } = useDisconnect()
-    const { data: session, status } = useSession()
+    const { data: session, status, update } = useSession()
 
     // const [isLoading, setIsLoading] = useState<boolean>(false)
     const { colorMode, toggleColorMode } = useColorMode()
@@ -56,13 +57,13 @@ const Navbar = (props: navbarProps) => {
 
     const connectionAccountBadge = isConnected ? (
         <Badge colorScheme={'green'}>
-            {address!.substring(0, Math.min(6, address!.length))}
+            {address?.substring(0, Math.min(6, address!.length))}
         </Badge>
     ) : (
         <Badge colorScheme={'red'}>{'Not Connected'}</Badge>
     )
 
-    const chainBadge = <Badge colorScheme={'green'}>{chain!.name}</Badge>
+    const chainBadge = <Badge colorScheme={'green'}>{chain?.name}</Badge>
 
     return (
         <div className={styles.container}>
@@ -122,15 +123,6 @@ const Navbar = (props: navbarProps) => {
             </Stack>
         </div>
     )
-}
-
-// not needed?
-export async function getServerSideProps(context: any) {
-    return {
-        props: {
-            csrfToken: await getCsrfToken(context),
-        },
-    }
 }
 
 export default Navbar
