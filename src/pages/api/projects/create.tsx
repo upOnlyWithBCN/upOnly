@@ -2,6 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next'
 import { UserData, getUser } from '../user/[address]'
 import { PROJECT_STATUS, circleObject, prismaClient } from '@/server/constants'
 import { Project } from '@prisma/client'
+import crypto from 'crypto'
 
 export type CreateProjectData = {
     project_owner_id: number
