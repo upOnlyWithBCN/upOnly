@@ -1,6 +1,3 @@
-import { CONNECTION_STATE } from '@/context/constants'
-import { useWeb3Context } from '@/context/useWeb3Context'
-import { signUpWithCircle } from '@/server/actions'
 import {
     Card,
     CardHeader,

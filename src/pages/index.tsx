@@ -3,7 +3,14 @@ import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 import { Circle, CircleEnvironments, Ping, Rate } from '@circle-fin/circle-sdk'
 import React, { useEffect, useState } from 'react'
-import { Button, SimpleGrid, Stack, Grid, GridItem } from '@chakra-ui/react'
+import {
+    Button,
+    SimpleGrid,
+    Stack,
+    Grid,
+    GridItem,
+    Flex,
+} from '@chakra-ui/react'
 import { circleObject } from '@/server/constants'
 import dynamic from 'next/dynamic'
 import { useSession } from 'next-auth/react'
@@ -47,19 +54,7 @@ export default function Home({ rates: { ethUSD, btcUSD } }: HOMEProps) {
     return (
         <>
             <main className={styles.main}>
-                <Grid
-                    templateAreas={`
-                  "nav main"
-                `}
-                    gridTemplateRows={'50px 1fr 30px'}
-                    gridTemplateColumns={'150px 1fr'}
-                    h="90vh"
-                    gap="1"
-                >
-                    <GridItem pl="2" area={'main'}>
-                        <ProjectsView />
-                    </GridItem>
-                </Grid>
+                <ProjectsView />
             </main>
         </>
     )
