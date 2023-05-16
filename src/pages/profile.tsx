@@ -12,6 +12,8 @@ import {
     CardHeader,
 } from '@chakra-ui/react'
 import { useSession, getSession } from 'next-auth/react'
+import SignInCard from '@/components/SignInCard'
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
 
 export default function Profile() {
     const { data: session, status } = useSession()
@@ -19,41 +21,53 @@ export default function Profile() {
     if (status === 'loading') {
         return <p>Loading...</p>
     }
-
-    if (status === 'unauthenticated') {
-        return <p>Access Denied</p>
-    }
     // Build profile
     return (
         <>
             <main className={styles.main}>
-                <Grid
-                    templateAreas={`"nav main"`}
-                    gridTemplateColumns={'300px 1fr'}
-                    // h="200px"
-                    gap="1"
-                    color="blackAlpha.700"
-                    fontWeight="bold"
-                    width="70%"
-                >
-                    <GridItem pl="2" area={'nav'}>
-                        <Stack direction="column">
-                            <ProfileCard />
-                        </Stack>
-                    </GridItem>
-                    <GridItem pl="2" gap="1" area={'main'}>
-                        <Stack gap="1">
-                            <Card>
-                                <CardHeader>
-                                    <Heading as="h3" size="lg">
-                                        Projects You Have Funded
-                                    </Heading>
-                                </CardHeader>
-                            </Card>
-                            <HistoryCard />
-                        </Stack>
-                    </GridItem>
-                </Grid>
+                {status === 'unauthenticated' ? (
+                    <SignInCard />
+                ) : (
+                    <Grid
+                        templateAreas={`"nav main"`}
+                        gridTemplateColumns={'300px 1fr'}
+                        // h="200px"
+                        gap="1"
+                        color="blackAlpha.700"
+                        fontWeight="bold"
+                        width="70%"
+                    >
+                        <GridItem pl="2" area={'nav'}>
+                            <Stack direction="column">
+                                <ProfileCard />
+                            </Stack>
+                        </GridItem>
+                        <GridItem pl="2" gap="1" area={'main'}>
+                            <Tabs>
+                                <Card>
+                                    <CardHeader>
+                                        <Heading as="h3" size="lg">
+                                            Projects
+                                        </Heading>
+                                    </CardHeader>
+                                    <TabList>
+                                        <Tab>Funded</Tab>
+                                        <Tab>Owned</Tab>
+                                    </TabList>
+                                </Card>
+
+                                <TabPanels>
+                                    <TabPanel>
+                                        <HistoryCard />
+                                    </TabPanel>
+                                    <TabPanel>
+                                        <p>two!</p>
+                                    </TabPanel>
+                                </TabPanels>
+                            </Tabs>
+                        </GridItem>
+                    </Grid>
+                )}
             </main>
         </>
     )

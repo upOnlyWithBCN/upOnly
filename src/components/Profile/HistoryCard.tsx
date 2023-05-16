@@ -15,103 +15,45 @@ import {
     StatLabel,
     Text,
 } from '@chakra-ui/react'
+import { getUserProjectsDonated } from '@/server/actions'
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
-
-export type fundedProject = {
-    projectTitle: string
-    projectImages: Array<String>
-    amountDonated: Number
-}
-
-const mockFundedProjects: Array<fundedProject> = [
-    {
-        projectTitle: 'Test Project',
-        projectImages: [
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffujifilm-x.com%2Fglobal%2Fproducts%2Fcameras%2Fgfx100s%2Fsample-images%2F&psig=AOvVaw2pD2w8rMXJC8Rg0lGlVM0b&ust=1683996266702000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDsg4yd8P4CFQAAAAAdAAAAABAE',
-        ],
-        amountDonated: 100,
-    },
-    {
-        projectTitle: 'Test Project',
-        projectImages: [
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffujifilm-x.com%2Fglobal%2Fproducts%2Fcameras%2Fgfx100s%2Fsample-images%2F&psig=AOvVaw2pD2w8rMXJC8Rg0lGlVM0b&ust=1683996266702000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDsg4yd8P4CFQAAAAAdAAAAABAE',
-        ],
-        amountDonated: 100,
-    },
-    {
-        projectTitle: 'Test Project',
-        projectImages: [
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffujifilm-x.com%2Fglobal%2Fproducts%2Fcameras%2Fgfx100s%2Fsample-images%2F&psig=AOvVaw2pD2w8rMXJC8Rg0lGlVM0b&ust=1683996266702000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDsg4yd8P4CFQAAAAAdAAAAABAE',
-        ],
-        amountDonated: 100,
-    },
-    {
-        projectTitle: 'Test Project',
-        projectImages: [
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffujifilm-x.com%2Fglobal%2Fproducts%2Fcameras%2Fgfx100s%2Fsample-images%2F&psig=AOvVaw2pD2w8rMXJC8Rg0lGlVM0b&ust=1683996266702000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDsg4yd8P4CFQAAAAAdAAAAABAE',
-        ],
-        amountDonated: 100,
-    },
-    {
-        projectTitle: 'Test Project',
-        projectImages: [
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffujifilm-x.com%2Fglobal%2Fproducts%2Fcameras%2Fgfx100s%2Fsample-images%2F&psig=AOvVaw2pD2w8rMXJC8Rg0lGlVM0b&ust=1683996266702000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDsg4yd8P4CFQAAAAAdAAAAABAE',
-        ],
-        amountDonated: 100,
-    },
-    {
-        projectTitle: 'Test Project',
-        projectImages: [
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffujifilm-x.com%2Fglobal%2Fproducts%2Fcameras%2Fgfx100s%2Fsample-images%2F&psig=AOvVaw2pD2w8rMXJC8Rg0lGlVM0b&ust=1683996266702000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDsg4yd8P4CFQAAAAAdAAAAABAE',
-        ],
-        amountDonated: 100,
-    },
-    {
-        projectTitle: 'Test Project',
-        projectImages: [
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffujifilm-x.com%2Fglobal%2Fproducts%2Fcameras%2Fgfx100s%2Fsample-images%2F&psig=AOvVaw2pD2w8rMXJC8Rg0lGlVM0b&ust=1683996266702000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDsg4yd8P4CFQAAAAAdAAAAABAE',
-        ],
-        amountDonated: 100,
-    },
-    {
-        projectTitle: 'Test Project',
-        projectImages: [
-            'https://www.google.com/url?sa=i&url=https%3A%2F%2Ffujifilm-x.com%2Fglobal%2Fproducts%2Fcameras%2Fgfx100s%2Fsample-images%2F&psig=AOvVaw2pD2w8rMXJC8Rg0lGlVM0b&ust=1683996266702000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCKDsg4yd8P4CFQAAAAAdAAAAABAE',
-        ],
-        amountDonated: 100,
-    },
-]
+import { GetUserProjectsDonatedRes } from '@/pages/api/user/projectsDonated'
 
 export type HistoryCardProps = {}
 
 const HistoryCard = ({}: HistoryCardProps) => {
-    const { data: session, status } = useSession()
-    const [projectsFunded, setProjectsFunded] = useState<Array<fundedProject>>()
+    const [getUserProjectsFundedRes, setGetUserProjectsFundedRes] =
+        useState<GetUserProjectsDonatedRes>()
 
     useEffect(() => {
         const fetchData = async () => {
-            setProjectsFunded(mockFundedProjects)
+            const userProjectsFunded = await getUserProjectsDonated({})
+            console.log(userProjectsFunded)
+            setGetUserProjectsFundedRes(userProjectsFunded)
         }
         fetchData()
     }, [])
 
     return (
         <>
-            {projectsFunded?.map((project) => {
-                return (
-                    <Card>
-                        <CardHeader>
-                            <Heading size="md">{project.projectTitle}</Heading>
-                        </CardHeader>
-                        <CardBody>
-                            Funded: ${project.amountDonated.toString()}
-                            {/* Add the smart contract address here? Avascan link*/}
-                        </CardBody>
-                    </Card>
-                )
-            })}
+            {getUserProjectsFundedRes?.projects_donated?.map(
+                (project, index) => {
+                    return (
+                        <Card key={index}>
+                            <CardHeader>
+                                <Heading size="md">
+                                    {project.project_id.project_title}
+                                </Heading>
+                            </CardHeader>
+                            <CardBody>
+                                Funded: ${project.amount_donated.toString()}
+                            </CardBody>
+                        </Card>
+                    )
+                }
+            )}
         </>
     )
 }

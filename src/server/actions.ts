@@ -6,6 +6,10 @@ import { CreateUserResponse } from '@/pages/api/user'
 import { UserData } from '@/pages/api/user/[address]'
 import { GetUserBalanceResponse } from '@/pages/api/wallet'
 import { Project } from '@prisma/client'
+import {
+    GetUserProjectsDonatedData,
+    GetUserProjectsDonatedRes,
+} from '@/pages/api/user/projectsDonated'
 
 const base_url = process.env.BASE_URL_DEV
 
@@ -74,6 +78,13 @@ export async function createProject(data: CreateProjectData) {
         })
     ).json()) as Project
     return response
+}
+
+export async function getUserProjectsDonated(data: GetUserProjectsDonatedData) {
+    const res = (await (
+        await fetch('./api/user/projectsDonated')
+    ).json()) as GetUserProjectsDonatedRes
+    return res
 }
 
 export async function getUserBalance() {
