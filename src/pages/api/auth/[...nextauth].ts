@@ -79,7 +79,7 @@ export const authOptions: AuthOptions = {
                     },
                 })
             }
-
+            session.userId = user!.id
             session.address = user!.address
             session.name = user!.name ?? user!.address
             session.deposit_wallet = user!.deposit_wallet
