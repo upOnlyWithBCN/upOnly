@@ -6,8 +6,8 @@ declare module 'next-auth' {
         expires: string
         token: string
         address: string
-        user: string
         name: string
+        userId: string
         deposit_wallet: DepositWallet
     }
 

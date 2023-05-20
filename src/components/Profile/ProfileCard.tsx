@@ -1,4 +1,5 @@
-import { signUpWithCircle } from '@/server/actions';
+import { signUpWithCircle, getUserBalance } from '@/server/actions'
+import styles from '@/styles/Profile.module.css'
 import {
     Avatar,
     Box,
@@ -13,28 +14,40 @@ import {
     Stat,
     StatHelpText,
     StatLabel,
-    Text
-} from '@chakra-ui/react';
-import { useSession } from 'next-auth/react';
-import { useState } from 'react';
-import { useAccount } from 'wagmi';
+    Text,
+    IconButton,
+} from '@chakra-ui/react'
+import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
+import { useAccount } from 'wagmi'
+import { MdModeEditOutline } from 'react-icons/md'
 
-export type ProfileCardProps = {};
+export type ProfileCardProps = {}
 
-const ProfileCard = ({ }: ProfileCardProps) => {
-    const { address, isConnected } = useAccount();
-    const { data: session, status } = useSession();
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+const ProfileCard = ({}: ProfileCardProps) => {
+    const { address, isConnected } = useAccount()
+    const { data: session, status } = useSession()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [userUsdBalance, setUserUsdBalance] = useState<Number>(0)
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const userUsdBalanceRes = await getUserBalance()
+            setUserUsdBalance(userUsdBalanceRes)
+        }
+        fetchData()
+    }, [])
+
     const onClick = async () => {
-        setIsLoading(true);
+        setIsLoading(true)
         try {
             await signUpWithCircle(address!)
         } catch (err) {
-            console.log(err);
+            console.log(err)
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
     return (
         <Card maxW="md">
             <CardHeader>
@@ -45,8 +58,14 @@ const ProfileCard = ({ }: ProfileCardProps) => {
                             src="https://bit.ly/sage-adebayo"
                         />
                         <Box>
-                            <Heading size="sm">Welcome, user</Heading>
-                            <Heading size="sm">Here are your details</Heading>
+                            <Heading size="sm">
+                                Welcome,
+                                {' ' +
+                                    session?.name.substring(
+                                        0,
+                                        Math.min(6, address!.length)
+                                    )}
+                            </Heading>
                         </Box>
                     </Flex>
                 </Flex>
@@ -69,11 +88,17 @@ const ProfileCard = ({ }: ProfileCardProps) => {
                 ) : (
                     <Stack divider={<StackDivider />} spacing="4">
                         <Stat>
-                            <StatLabel>Your Current Wallet address</StatLabel>
+                            <StatLabel>Balances</StatLabel>
+                            <StatHelpText>
+                                USD: ${userUsdBalance.toString()}
+                            </StatHelpText>
+                        </Stat>
+                        <Stat>
+                            <StatLabel>Blockchain Address</StatLabel>
                             <StatHelpText>{session.address}</StatHelpText>
                         </Stat>
                         <Stat>
-                            <StatLabel>Circle Wallet address</StatLabel>
+                            <StatLabel>Circle Wallet Address</StatLabel>
                             <StatHelpText>
                                 {session.deposit_wallet?.deposit_wallet_address}
                             </StatHelpText>
@@ -84,16 +109,12 @@ const ProfileCard = ({ }: ProfileCardProps) => {
                                 {session.deposit_wallet?.deposit_wallet_id}
                             </StatHelpText>
                         </Stat>
-                        <Stat>
-                            <StatLabel>Name</StatLabel>
-                            <StatHelpText>{session.name}</StatHelpText>
-                        </Stat>
                         <Text></Text>
                     </Stack>
                 )}
             </CardBody>
         </Card>
-    );
-};
+    )
+}
 
-export default ProfileCard;
+export default ProfileCard

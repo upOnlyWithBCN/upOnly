@@ -1,3 +1,7 @@
+import { GetCatagoriesData } from '@/pages/api/category'
+import { GetProjectsData } from '@/pages/api/projects'
+import { GetProjectData } from '@/pages/api/projects/[project_id]'
+import { CreateProjectData } from '@/pages/api/projects/create'
 import { CreateUserResponse } from '@/pages/api/user'
 import { UserData } from '@/pages/api/user/[address]'
 import { GetUserBalanceResponse } from '@/pages/api/wallet'
@@ -7,13 +11,11 @@ import {
     GetUserProjectsDonatedRes,
 } from '@/pages/api/user/projectsDonated'
 import { GetUserProjectsOwnedRes } from '@/pages/api/user/projectsOwned'
-
 const base_url = process.env.BASE_URL_DEV
-import { m } from 'framer-motion'
 
 export async function fetchUserDataFromPrisma(address: string) {
     const response = (await (
-        await fetch(`./api/user/${address}`)
+        await fetch(`${base_url}/api/user/${address}`)
     ).json()) as UserData
 
     return response
@@ -21,7 +23,7 @@ export async function fetchUserDataFromPrisma(address: string) {
 
 export async function signUpWithCircle(address: string) {
     const response = (await (
-        await fetch('./api/user', {
+        await fetch(`${base_url}/api/user`, {
             method: 'POST',
             body: JSON.stringify({
                 address: address,
@@ -32,13 +34,6 @@ export async function signUpWithCircle(address: string) {
         })
     ).json()) as CreateUserResponse
     return response
-}
-
-export async function getProject(project_id: number): Promise<GetProjectData> {
-    console.log(project_id)
-    return (await (
-        await fetch(`${base_url}/api/projects/single/${project_id}`)
-    ).json()) as GetProjectData
 }
 
 export async function getCategories(): Promise<GetCatagoriesData> {
@@ -76,6 +71,13 @@ export async function createProject(data: CreateProjectData) {
         })
     ).json()) as Project
     return response
+}
+
+export async function getProject(project_id: number): Promise<GetProjectData> {
+    console.log(project_id)
+    return (await (
+        await fetch(`${base_url}/api/projects/single/${project_id}`)
+    ).json()) as GetProjectData
 }
 
 export async function getUserProjectsDonated(data: GetUserProjectsDonatedData) {

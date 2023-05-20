@@ -9,16 +9,21 @@ import {
     ModalFooter,
     ModalHeader,
     ModalOverlay,
+    Spacer,
     Stack,
     useColorMode,
     useDisclosure,
 } from '@chakra-ui/react'
+import { getUserBalance } from '@/server/actions'
 import styles from './navbar.module.css'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
-import { getCsrfToken, useSession, signOut } from 'next-auth/react'
+import { getCsrfToken, useSession, signOut, signIn } from 'next-auth/react'
 import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { avalanche, bsc, mainnet } from '@wagmi/core/chains'
+import { CgProfile } from 'react-icons/cg'
+import NextLink from 'next/link'
+import { useState, useEffect } from 'react'
 
 export type navbarProps = {}
 
@@ -29,11 +34,20 @@ const Navbar = (props: navbarProps) => {
     })
     const { chain, chains } = useNetwork()
     const { disconnect } = useDisconnect()
-    const { data: session, status } = useSession()
+    const { data: session, status, update } = useSession()
 
     // const [isLoading, setIsLoading] = useState<boolean>(false)
     const { colorMode, toggleColorMode } = useColorMode()
     const { isOpen, onOpen, onClose } = useDisclosure()
+    const [userUsdBalance, setUserUsdBalance] = useState<Number>(0)
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const userUsdBalanceRes = await getUserBalance()
+            setUserUsdBalance(userUsdBalanceRes)
+        }
+        fetchData()
+    }, [])
 
     //MetaMask does not support programmatic disconnect. This flag simulates the disconnect behavior by keeping track of connection status in storage.
     const disconnectButton = (
@@ -56,13 +70,21 @@ const Navbar = (props: navbarProps) => {
 
     const connectionAccountBadge = isConnected ? (
         <Badge colorScheme={'green'}>
-            {address!.substring(0, Math.min(6, address!.length))}
+            {address?.substring(0, Math.min(6, address!.length))}
         </Badge>
     ) : (
         <Badge colorScheme={'red'}>{'Not Connected'}</Badge>
     )
 
-    const chainBadge = <Badge colorScheme={'green'}>{chain!.name}</Badge>
+    const chainBadge = (
+        <Badge colorScheme={'green'}>
+            {chain == undefined ? '' : chain!.name}
+        </Badge>
+    )
+
+    const balanceBadge = (
+        <Badge colorScheme={'green'}>{'$' + userUsdBalance.toString()}</Badge>
+    )
 
     return (
         <div className={styles.container}>
@@ -120,17 +142,18 @@ const Navbar = (props: navbarProps) => {
             <Stack direction="column" justifyContent={'center'}>
                 {chainBadge}
             </Stack>
+            <Spacer></Spacer>
+            <Stack direction="column" justifyContent={'center'}>
+                {balanceBadge}
+            </Stack>
+            <NextLink href="/profile" passHref>
+                <IconButton
+                    aria-label="Profile"
+                    icon={<CgProfile size={28} />}
+                />
+            </NextLink>
         </div>
     )
-}
-
-// not needed?
-export async function getServerSideProps(context: any) {
-    return {
-        props: {
-            csrfToken: await getCsrfToken(context),
-        },
-    }
 }
 
 export default Navbar

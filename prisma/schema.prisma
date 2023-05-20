@@ -17,7 +17,7 @@ model User {
   name           String?
   // https://www.prisma.io/docs/concepts/components/prisma-schema/relations/one-to-one-relations
   deposit_wallet Deposit_wallet?
-  projects_owned Project[]
+  projects_owned Project[] // implicit m to n
   Donations      Donations[]
 }
 
@@ -30,21 +30,19 @@ model Deposit_wallet {
 }
 
 model Chain {
-  chain_id String @unique
-
-  Project   Project? @relation(fields: [projectId], references: [project_id])
-  projectId Int?
+  id       Int       @id @default(autoincrement())
+  chain_id String    @unique
+  projects Project[]
 }
 
 model Category {
-  category String @unique
-
-  Project           Project? @relation(fields: [projectProject_id], references: [project_id])
-  projectProject_id Int?
+  id       Int       @id @default(autoincrement())
+  category String
+  projects Project[]
 }
 
 model Project {
-  created_time DateTime
+  created_time DateTime @default(now())
 
   project_id             Int     @id @default(autoincrement())
   chain_ids              Chain[]
@@ -84,6 +82,7 @@ model Donations {
   id                BigInt  @id @default(autoincrement())
   user_id           User    @relation(fields: [userId], references: [id])
   project_id        Project @relation(fields: [projectProject_id], references: [project_id])
+  amount_donated    Decimal
   userId            Int
   projectProject_id Int
 }
