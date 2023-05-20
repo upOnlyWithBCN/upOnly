@@ -80,7 +80,7 @@ export default function ProjectCreate(props: ProjectCreatePageProp) {
         setIsLoading(true)
         try {
             const { project_id } = await createProject({
-                project_owner_id: parseInt(session.userId), // TODO: some bug while reading the userID
+                project_owner_id: parseInt(session.userId),
                 project_data: projectData,
             })
             router.push(`/projects/${project_id}`)
