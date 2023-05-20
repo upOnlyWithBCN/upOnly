@@ -16,6 +16,8 @@ export type OwnedProject = {
     project_title: string
     images: Array<Project_images>
     status: string
+    raised_amount: Decimal
+    project_id: number
 }
 
 export default async function handler(
@@ -45,6 +47,8 @@ export default async function handler(
                     project_title: true,
                     images: true,
                     status: true,
+                    raised_amount: true,
+                    project_id: true,
                 },
             })
             let resData: GetUserProjectsOwnedRes = {
