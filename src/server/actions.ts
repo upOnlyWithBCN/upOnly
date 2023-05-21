@@ -10,7 +10,7 @@ import {
     GetUserProjectsDonatedData,
     GetUserProjectsDonatedRes,
 } from '@/pages/api/user/projectsDonated'
-
+import { GetUserProjectsOwnedRes } from '@/pages/api/user/projectsOwned'
 const base_url = process.env.BASE_URL_DEV
 
 export async function fetchUserDataFromPrisma(address: string) {
@@ -34,13 +34,6 @@ export async function signUpWithCircle(address: string) {
         })
     ).json()) as CreateUserResponse
     return response
-}
-
-export async function getProject(project_id: number): Promise<GetProjectData> {
-    console.log(project_id)
-    return (await (
-        await fetch(`${base_url}/api/projects/single/${project_id}`)
-    ).json()) as GetProjectData
 }
 
 export async function getCategories(): Promise<GetCatagoriesData> {
@@ -80,10 +73,24 @@ export async function createProject(data: CreateProjectData) {
     return response
 }
 
+export async function getProject(project_id: number): Promise<GetProjectData> {
+    console.log(project_id)
+    return (await (
+        await fetch(`${base_url}/api/projects/single/${project_id}`)
+    ).json()) as GetProjectData
+}
+
 export async function getUserProjectsDonated(data: GetUserProjectsDonatedData) {
     const res = (await (
         await fetch('./api/user/projectsDonated')
     ).json()) as GetUserProjectsDonatedRes
+    return res
+}
+
+export async function getUserProjectsOwned(data: GetUserProjectsDonatedData) {
+    const res = (await (
+        await fetch('./api/user/projectsOwned')
+    ).json()) as GetUserProjectsOwnedRes
     return res
 }
 

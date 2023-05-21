@@ -16,6 +16,8 @@ export type OwnedProject = {
     project_title: string
     images: Array<Project_images>
     status: string
+    raised_amount: Decimal
+    project_id: number
 }
 
 export default async function handler(
@@ -45,9 +47,16 @@ export default async function handler(
                     project_title: true,
                     images: true,
                     status: true,
+                    raised_amount: true,
+                    project_id: true,
                 },
             })
-            console.log(projectsOwned)
+            let resData: GetUserProjectsOwnedRes = {
+                total_owned: projectsOwned.length,
+                projects_owned: projectsOwned,
+            }
+
+            res.status(200).json(resData)
         } catch (err) {
             // Not Signed in
             res.status(401)

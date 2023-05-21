@@ -38,6 +38,7 @@ import {
     Textarea,
     Spacer,
 } from '@chakra-ui/react'
+import { useSession } from 'next-auth/react'
 
 import { FormEvent, useState } from 'react'
 
@@ -50,7 +51,7 @@ const displayDate = (createdDate: string) => {
 
 export default function ProjectCreate(props: ProjectCreatePageProp) {
     const router = useRouter()
-
+    const { data: session } = useSession()
     // const { project } = props
     const [project_title, setProjectTitle] = useState<string>('')
     const [project_details, setProjectDetails] = useState<string>('')
@@ -60,6 +61,10 @@ export default function ProjectCreate(props: ProjectCreatePageProp) {
 
     const [targeted_amount, setTargetedAmount] = useState<number>(0)
     const [isLoading, setIsLoading] = useState<boolean>(false)
+
+    if (session === null) {
+        return <p>Please sign in</p>
+    }
 
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -75,7 +80,7 @@ export default function ProjectCreate(props: ProjectCreatePageProp) {
         setIsLoading(true)
         try {
             const { project_id } = await createProject({
-                project_owner_id: 1, // TODO: get from login
+                project_owner_id: parseInt(session.userId),
                 project_data: projectData,
             })
             router.push(`/projects/${project_id}`)

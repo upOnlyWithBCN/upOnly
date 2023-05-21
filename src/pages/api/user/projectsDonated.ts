@@ -17,6 +17,7 @@ export type Donations = {
         project_title: string
         images: Array<Project_images>
         status: string
+        project_id: number
     }
 }
 
@@ -41,6 +42,7 @@ export default async function handler(
                             project_title: true,
                             images: true,
                             status: true,
+                            project_id: true,
                         },
                     },
                 },

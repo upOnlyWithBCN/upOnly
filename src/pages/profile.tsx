@@ -1,5 +1,6 @@
 import ProfileCard from '../components/Profile/ProfileCard'
-import HistoryCard from '@/components/Profile/HistoryCard'
+import ProjectsDonatedCard from '@/components/Profile/ProjectsDonatedCard'
+import ProjectsOwnedCard from '@/components/Profile/ProjectsOwnedCard'
 import styles from '@/styles/Profile.module.css'
 import {
     Button,
@@ -58,10 +59,10 @@ export default function Profile() {
 
                                 <TabPanels>
                                     <TabPanel>
-                                        <HistoryCard />
+                                        <ProjectsDonatedCard />
                                     </TabPanel>
                                     <TabPanel>
-                                        <p>two!</p>
+                                        <ProjectsOwnedCard />
                                     </TabPanel>
                                 </TabPanels>
                             </Tabs>
