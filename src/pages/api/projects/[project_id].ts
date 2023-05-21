@@ -15,7 +15,7 @@ export type GetProjectData =
                 })
               | null
       }
-    | { project_id: number }
+    | { project_id: number; txn_hash: string }
 // TODO add support refund and payout
 
 export default async function getProjectHandler(
@@ -45,7 +45,9 @@ export default async function getProjectHandler(
                         }
                     )
                     console.log(request)
-                    await viemWalletObject.writeContract(request)
+                    const txnHash = await viemWalletObject.writeContract(
+                        request
+                    )
 
                     const updateStatus = await prismaClient.project.update({
                         where: {
@@ -53,12 +55,13 @@ export default async function getProjectHandler(
                         },
                         data: {
                             status: PROJECT_STATUS.FUNDING_COMPLETE,
+                            completed_txn_hash: txnHash,
                         },
                     })
-                    res.status(200).json({ project_id: id })
+                    res.status(200).json({ project_id: id, txn_hash: txnHash })
                 } catch (err) {
                     console.log(err)
-                    res.status(500).json({ project_id: id })
+                    res.status(500).json({ project_id: id, txn_hash: '' })
                 }
             } else if (action === 'refundDonations') {
                 console.log('Refund donation')
@@ -71,7 +74,9 @@ export default async function getProjectHandler(
                             functionName: 'refundDonations',
                         }
                     )
-                    await viemWalletObject.writeContract(request)
+                    const txnHash = await viemWalletObject.writeContract(
+                        request
+                    )
 
                     const updateStatus = await prismaClient.project.update({
                         where: {
@@ -79,11 +84,13 @@ export default async function getProjectHandler(
                         },
                         data: {
                             status: PROJECT_STATUS.FUNDING_FAILED,
+                            completed_txn_hash: txnHash,
                         },
                     })
-                    res.status(200).json({ project_id: id })
+                    res.status(200).json({ project_id: id, txn_hash: txnHash })
                 } catch (err) {
-                    res.status(500).json({ project_id: id })
+                    console.log(err)
+                    res.status(500).json({ project_id: id, txn_hash: '' })
                 }
             } else {
                 res.status(401).end('undefined action')

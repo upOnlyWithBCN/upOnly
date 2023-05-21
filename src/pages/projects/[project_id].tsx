@@ -12,6 +12,7 @@ import {
     CardBody,
     CardFooter,
     Button,
+    Badge,
     Box,
     Text,
     Image,
@@ -152,6 +153,21 @@ export default function Page(props: ProjectDetailPageProp) {
             <Card maxW="lg" variant="filled">
                 <CardHeader>
                     <Heading size="md">{project_title}</Heading>
+                    <Badge
+                        colorScheme={
+                            project.status === 'FUNDING_COMPLETE'
+                                ? 'green'
+                                : project.status === 'FUNDING_FAILED'
+                                ? 'red'
+                                : 'yellow'
+                        }
+                    >
+                        {project.status === 'FUNDING_COMPLETE'
+                            ? 'Completed'
+                            : project.status === 'FUNDING_FAILED'
+                            ? 'Failed'
+                            : 'In Progress'}
+                    </Badge>
                 </CardHeader>
                 <CardBody>
                     <Stack divider={<StackDivider />} spacing="4">
