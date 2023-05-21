@@ -1,6 +1,9 @@
 import { INITIAL_STATE } from '@/context/constants'
 import { Circle, CircleEnvironments } from '@circle-fin/circle-sdk'
 import { PrismaClient } from '@prisma/client'
+import { createWalletClient, http, Hex, createPublicClient } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import { avalancheFuji } from 'viem/chains'
 
 const circleInstance = () => {
     const API_KEY = process.env.API_KEY ?? ''
@@ -8,6 +11,28 @@ const circleInstance = () => {
 }
 
 export const circleObject = circleInstance()
+
+const viemPublicClientInstance = () => {
+    return createPublicClient({
+        chain: avalancheFuji,
+        transport: http(),
+    })
+}
+
+export const viemPublicObject = viemPublicClientInstance()
+
+const viemWalletClientInstance = () => {
+    const account = privateKeyToAccount(
+        process.env.ADMIN_WALLET_PRIVATE_KEY as Hex
+    )
+    return createWalletClient({
+        account,
+        chain: avalancheFuji,
+        transport: http(),
+    })
+}
+
+export const viemWalletObject = viemWalletClientInstance()
 
 export const isValidExchangePair = (pair: string): boolean => {
     switch (pair) {

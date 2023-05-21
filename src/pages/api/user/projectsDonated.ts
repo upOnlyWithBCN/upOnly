@@ -1,5 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { circleObject, prismaClient } from '@/server/constants'
+import {
+    circleObject,
+    prismaClient,
+    viemWalletObject,
+    viemPublicObject,
+} from '@/server/constants'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../auth/[...nextauth]'
 import { Decimal } from '@prisma/client/runtime'
