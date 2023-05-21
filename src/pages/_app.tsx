@@ -9,7 +9,7 @@ import CircleAPIContext from '@/context/CircleAPIContext'
 import { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
 import { WagmiConfig, createClient, configureChains } from 'wagmi'
-import { avalanche, bsc, mainnet } from '@wagmi/core/chains'
+import { avalancheFuji } from '@wagmi/core/chains'
 import { publicProvider } from 'wagmi/providers/public'
 
 const ClientNavbar = dynamic(() => import('../components/Navbar/Navbar'), {
@@ -17,7 +17,7 @@ const ClientNavbar = dynamic(() => import('../components/Navbar/Navbar'), {
 })
 
 export const { chains, provider } = configureChains(
-    [mainnet, avalanche],
+    [avalancheFuji],
     [publicProvider()]
 )
 

@@ -44,6 +44,7 @@ const Navbar = (props: navbarProps) => {
     useEffect(() => {
         const fetchData = async () => {
             const userUsdBalanceRes = await getUserBalance()
+            console.log('user request', userUsdBalanceRes)
             setUserUsdBalance(userUsdBalanceRes)
         }
         fetchData()
@@ -83,7 +84,7 @@ const Navbar = (props: navbarProps) => {
     )
 
     const balanceBadge = (
-        <Badge colorScheme={'green'}>{'$' + userUsdBalance.toString()}</Badge>
+        <Badge colorScheme={'green'}>{'$' + userUsdBalance?.toString()}</Badge>
     )
 
     return (
