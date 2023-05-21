@@ -1,3 +1,5 @@
+'use client'
+
 import {
     Box,
     Button,
@@ -22,6 +24,7 @@ import { SiweMessage } from 'siwe'
 import { useAccount, useConnect, useSignMessage } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { useState } from 'react'
+import ClientOnly from './Utils/ClientOnly'
 
 export type SignInCardProps = {}
 
@@ -63,84 +66,92 @@ const SignInCard = ({}: SignInCardProps) => {
     }
 
     return (
-        <Card maxW="md">
-            <CardHeader>
-                <Flex>
-                    <Flex flex="1" gap="4" alignItems="center" flexWrap="wrap">
-                        <Box>
-                            {isConnected ? (
-                                <Heading size="sm">
-                                    Welcome,{' '}
-                                    {address!.substring(
-                                        0,
-                                        Math.min(6, address!.length)
-                                    )}{' '}
-                                    sign in to UpOnly
-                                </Heading>
-                            ) : (
-                                <Heading size="sm">
-                                    Welcome Degen, connect your wallet to begin
-                                </Heading>
-                            )}
-                        </Box>
-                    </Flex>
-                </Flex>
-            </CardHeader>
-            <CardBody>
-                <Center>
-                    {isConnected ? (
-                        <Button
-                            isLoading={isLoading}
-                            colorScheme="green"
-                            onClick={(e) => {
-                                e.preventDefault()
-                                // disconnect()
-                                handleLogin()
-                            }}
+        <ClientOnly>
+            <Card maxW="md">
+                <CardHeader>
+                    <Flex>
+                        <Flex
+                            flex="1"
+                            gap="4"
+                            alignItems="center"
+                            flexWrap="wrap"
                         >
-                            Sign In
-                        </Button>
-                    ) : (
-                        <>
-                            <Button colorScheme="purple" onClick={onOpen}>
-                                Connect Wallet
+                            <Box>
+                                {isConnected ? (
+                                    <Heading size="sm">
+                                        Welcome,{' '}
+                                        {address!.substring(
+                                            0,
+                                            Math.min(6, address!.length)
+                                        )}{' '}
+                                        sign in to UpOnly
+                                    </Heading>
+                                ) : (
+                                    <Heading size="sm">
+                                        Welcome Degen, connect your wallet to
+                                        begin
+                                    </Heading>
+                                )}
+                            </Box>
+                        </Flex>
+                    </Flex>
+                </CardHeader>
+                <CardBody>
+                    <Center>
+                        {isConnected ? (
+                            <Button
+                                isLoading={isLoading}
+                                colorScheme="green"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    // disconnect()
+                                    handleLogin()
+                                }}
+                            >
+                                Sign In
                             </Button>
-                            <Modal isOpen={isOpen} onClose={onClose}>
-                                <ModalOverlay />
-                                <ModalContent>
-                                    <ModalHeader>Choose wallet</ModalHeader>
-                                    <ModalCloseButton />
-                                    <ModalBody>
-                                        <Stack spacing={3}>
-                                            <Button
-                                                colorScheme="purple"
-                                                onClick={(e) => {
-                                                    e.preventDefault()
-                                                    connect()
-                                                }}
-                                            >
-                                                Metamask
-                                            </Button>
-                                        </Stack>
-                                    </ModalBody>
+                        ) : (
+                            <>
+                                <Button colorScheme="purple" onClick={onOpen}>
+                                    Connect Wallet
+                                </Button>
+                                <Modal isOpen={isOpen} onClose={onClose}>
+                                    <ModalOverlay />
+                                    <ModalContent>
+                                        <ModalHeader>Choose wallet</ModalHeader>
+                                        <ModalCloseButton />
+                                        <ModalBody>
+                                            <Stack spacing={3}>
+                                                <Button
+                                                    colorScheme="purple"
+                                                    onClick={(e) => {
+                                                        e.preventDefault()
+                                                        connect()
+                                                    }}
+                                                >
+                                                    Metamask
+                                                </Button>
+                                            </Stack>
+                                        </ModalBody>
 
-                                    <ModalFooter>
-                                        <Button
-                                            colorScheme="blue"
-                                            mr={3}
-                                            onClick={onClose}
-                                        >
-                                            Close
-                                        </Button>
-                                    </ModalFooter>
-                                </ModalContent>
-                            </Modal>
-                        </>
-                    )}
-                </Center>
-                {!session ? <></> : <div>You are signed in</div>}
-            </CardBody>
-        </Card>
+                                        <ModalFooter>
+                                            <Button
+                                                colorScheme="blue"
+                                                mr={3}
+                                                onClick={onClose}
+                                            >
+                                                Close
+                                            </Button>
+                                        </ModalFooter>
+                                    </ModalContent>
+                                </Modal>
+                            </>
+                        )}
+                    </Center>
+                    {!session ? <></> : <div>You are signed in</div>}
+                </CardBody>
+            </Card>
+        </ClientOnly>
     )
 }
 
