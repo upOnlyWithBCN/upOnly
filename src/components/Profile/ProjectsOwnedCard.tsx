@@ -21,6 +21,8 @@ import {
     Badge,
     LinkBox,
     LinkOverlay,
+    Grid,
+    GridItem,
 } from '@chakra-ui/react'
 import { useSession } from 'next-auth/react'
 import { useState, useEffect } from 'react'
@@ -43,55 +45,58 @@ const ProjectsOwnedCard = ({}: ProjectsOwnedCardProps) => {
     }, [])
 
     return (
-        <>
+        <Grid templateColumns="repeat(3, auto)" gap={1}>
             {getUserProjectsOwnedRes?.projects_owned?.map((project, index) => {
                 return (
-                    <LinkBox
-                        key={index}
-                        as="article"
-                        maxW="sm"
-                        p="5"
-                        borderWidth="1px"
-                        rounded="md"
-                    >
-                        <Card>
-                            <CardHeader>
-                                <LinkOverlay
-                                    href={
-                                        '/projects/' +
-                                        project.project_id.toString()
-                                    }
-                                >
-                                    <Heading size="md">
-                                        {project.project_title}
-                                    </Heading>
-                                </LinkOverlay>
-                                <Badge
-                                    colorScheme={
-                                        project.status === 'FUNDING_COMPLETE'
-                                            ? 'green'
+                    <GridItem key={index}>
+                        <LinkBox
+                            as="article"
+                            maxW="sm"
+                            p="5"
+                            borderWidth="1px"
+                            rounded="md"
+                        >
+                            <Card>
+                                <CardHeader>
+                                    <LinkOverlay
+                                        href={
+                                            '/projects/' +
+                                            project.project_id.toString()
+                                        }
+                                    >
+                                        <Heading size="md">
+                                            {project.project_title}
+                                        </Heading>
+                                    </LinkOverlay>
+                                    <Badge
+                                        colorScheme={
+                                            project.status ===
+                                            'FUNDING_COMPLETE'
+                                                ? 'green'
+                                                : project.status ===
+                                                  'FUNDING_FAILED'
+                                                ? 'red'
+                                                : 'yellow'
+                                        }
+                                    >
+                                        {project.status === 'FUNDING_COMPLETE'
+                                            ? 'Completed'
                                             : project.status ===
                                               'FUNDING_FAILED'
-                                            ? 'red'
-                                            : 'yellow'
-                                    }
-                                >
-                                    {project.status === 'FUNDING_COMPLETE'
-                                        ? 'Completed'
-                                        : project.status === 'FUNDING_FAILED'
-                                        ? 'Failed'
-                                        : 'In Progress'}
-                                </Badge>
-                            </CardHeader>
-                            <CardBody>
-                                Raised Amount: $
-                                {project.raised_amount.toString()}
-                            </CardBody>
-                        </Card>
-                    </LinkBox>
+                                            ? 'Failed'
+                                            : 'In Progress'}
+                                    </Badge>
+                                </CardHeader>
+                                <CardBody>
+                                    Raised Amount: $
+                                    {project.raised_amount.toString()}
+                                </CardBody>
+                            </Card>
+                        </LinkBox>
+                    </GridItem>
                 )
             })}
-        </>
+        </Grid>
     )
 }
 

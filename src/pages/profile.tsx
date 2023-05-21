@@ -32,7 +32,6 @@ export default function Profile() {
                     <Grid
                         templateAreas={`"nav main"`}
                         gridTemplateColumns={'300px 1fr'}
-                        // h="200px"
                         gap="1"
                         color="blackAlpha.700"
                         fontWeight="bold"
@@ -61,7 +60,8 @@ export default function Profile() {
                                     <TabPanel>
                                         <ProjectsDonatedCard />
                                     </TabPanel>
-                                    <TabPanel>
+                                    <TabPanel maxH="50vh">
+                        
                                         <ProjectsOwnedCard />
                                     </TabPanel>
                                 </TabPanels>
