@@ -52,7 +52,6 @@ export default async function createProjectHandler(
     } else {
         res.status(403).end('not signed in')
     }
-    }
 }
 
 const createProject = async (inputData: CreateProjectData, address: string) => {
