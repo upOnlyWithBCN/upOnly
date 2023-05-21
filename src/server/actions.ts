@@ -11,6 +11,10 @@ import {
     GetUserProjectsDonatedRes,
 } from '@/pages/api/user/projectsDonated'
 import { GetUserProjectsOwnedRes } from '@/pages/api/user/projectsOwned'
+import {
+    CreateCryptoPaymentIntentData,
+    CreateCryptoPaymentIntentResponse,
+} from '@/pages/api/wallet/payment-intent'
 const base_url = process.env.BASE_URL_DEV
 
 export async function fetchUserDataFromPrisma(address: string) {
@@ -99,4 +103,18 @@ export async function getUserBalance() {
         await fetch('./api/wallet')
     ).json()) as GetUserBalanceResponse
     return res.usdBalance
+}
+
+export async function createPaymentIntent(data: CreateCryptoPaymentIntentData) {
+    const response = (await (
+        await fetch('./api/wallet/payment-intent', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+    ).json()) as CreateCryptoPaymentIntentResponse
+
+    return response.res
 }

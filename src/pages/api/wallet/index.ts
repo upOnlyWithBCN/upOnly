@@ -1,9 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { circleObject, prismaClient } from '@/server/constants'
 import { getServerSession } from 'next-auth/next'
-import { authOptions } from './auth/[...nextauth]'
+import { authOptions } from '../auth/[...nextauth]'
 import { Deposit_wallet } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime'
+import { PaymentIntentCreationRequest } from '@circle-fin/circle-sdk'
 
 export type GetUserBalanceResponse = {
     usdBalance: Number
@@ -52,4 +53,27 @@ const getUserWalletBalance = async (walletId: string) => {
     } catch (e) {
         console.log(e)
     }
+}
+
+const createCryptoPayment = async (amount: string, address: string) => {
+    const reqBody: PaymentIntentCreationRequest = {
+        amount: {
+            amount,
+            currency: 'USD',
+        },
+
+        settlementCurrency: 'USD',
+        paymentMethods: [
+            {
+                type: 'blockchain',
+                chain: 'AVAX',
+                address: address,
+            },
+        ],
+        idempotencyKey: crypto.randomUUID(),
+    }
+    const resp = await circleObject.cryptoPaymentIntents.createPaymentIntent(
+        reqBody
+    )
+    return resp
 }

@@ -1,4 +1,8 @@
-import { signUpWithCircle, getUserBalance } from '@/server/actions'
+import {
+    signUpWithCircle,
+    getUserBalance,
+    createPaymentIntent,
+} from '@/server/actions'
 import styles from '@/styles/Profile.module.css'
 import {
     Avatar,
@@ -16,19 +20,54 @@ import {
     StatLabel,
     Text,
     IconButton,
+    NumberDecrementStepper,
+    NumberIncrementStepper,
+    NumberInput,
+    NumberInputField,
+    NumberInputStepper,
+    Spacer,
+    Input,
 } from '@chakra-ui/react'
 import { useSession } from 'next-auth/react'
-import { useState, useEffect } from 'react'
-import { useAccount } from 'wagmi'
-import { MdModeEditOutline } from 'react-icons/md'
+import { useState, useEffect, FormEvent } from 'react'
+import { erc20ABI, useAccount, useContract, useNetwork, useToken } from 'wagmi'
+import { useDebounce } from 'use-debounce'
+import {
+    usePrepareSendTransaction,
+    useSendTransaction,
+    useWaitForTransaction,
+    usePrepareContractWrite,
+    useContractWrite,
+} from 'wagmi'
+import { BigNumber, utils } from 'ethers/lib/ethers'
+import { USDC_AVALANCHE_FUJI_CONTRACT } from '@/server/constants'
+import { Hex } from 'viem'
 
 export type ProfileCardProps = {}
 
 const ProfileCard = ({}: ProfileCardProps) => {
     const { address, isConnected } = useAccount()
+    const { chain, chains } = useNetwork()
     const { data: session, status } = useSession()
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [userUsdBalance, setUserUsdBalance] = useState<Number>(0)
+
+    const [topUpAmount, setTopUpAmount] = useState<string>('0')
+    const [isButtonLoading, setIsButtonLoading] = useState<boolean>(false)
+
+    const [debouncedAmount] = useDebounce(topUpAmount, 500)
+
+    const { config } = usePrepareContractWrite({
+        address: USDC_AVALANCHE_FUJI_CONTRACT,
+        abi: erc20ABI,
+        functionName: 'transfer',
+        args: [
+            (session?.deposit_wallet.deposit_wallet_address ?? '') as Hex,
+            utils.parseEther(debouncedAmount),
+        ],
+    })
+
+    const { write } = useContractWrite(config)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,6 +85,18 @@ const ProfileCard = ({}: ProfileCardProps) => {
             console.log(err)
         } finally {
             setIsLoading(false)
+        }
+    }
+
+    const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        setIsButtonLoading(true)
+        try {
+            write?.()
+        } catch (err) {
+            console.log(err)
+        } finally {
+            setIsButtonLoading(false)
         }
     }
     return (
@@ -109,7 +160,34 @@ const ProfileCard = ({}: ProfileCardProps) => {
                                 {session.deposit_wallet?.deposit_wallet_id}
                             </StatHelpText>
                         </Stat>
-                        <Text></Text>
+                        <form onSubmit={onSubmit}>
+                            <NumberInput
+                                precision={2}
+                                step={0.2}
+                                value={topUpAmount}
+                                onChange={(value) => {
+                                    if (!value) {
+                                        setTopUpAmount(value + '')
+                                    } else {
+                                        setTopUpAmount(value ?? 0)
+                                    }
+                                }}
+                            >
+                                <NumberInputField />
+                                <NumberInputStepper>
+                                    <NumberIncrementStepper />
+                                    <NumberDecrementStepper />
+                                </NumberInputStepper>
+                            </NumberInput>
+                            <br />
+                            <Button
+                                isLoading={isButtonLoading}
+                                type="submit"
+                                size="md"
+                            >
+                                Top up Circle wallet with USDC
+                            </Button>
+                        </form>
                     </Stack>
                 )}
             </CardBody>
