@@ -25,13 +25,11 @@ export default async function handler(
                 usdBalance,
             })
         } catch (err) {
-            res.status(500).json({
-                message: 'error getting user wallet balance',
-            })
+            res.status(500).end('error getting user wallet balance')
         }
     } else {
         // Not Signed in
-        res.status(401)
+        res.status(401).end('not logged in')
     }
 }
 

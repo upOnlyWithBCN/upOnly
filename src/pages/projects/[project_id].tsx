@@ -1,5 +1,5 @@
 import { getProject } from '@/server/actions'
-import { Prisma, Project } from '@prisma/client'
+import { Prisma, Project, User } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { GetProjectData, getSingleProject } from '../api/projects/[project_id]'
 import {
@@ -32,8 +32,10 @@ import {
     SliderFilledTrack,
     SliderThumb,
     SliderTrack,
+    ButtonGroup,
 } from '@chakra-ui/react'
 import { useState } from 'react'
+import { useSession } from 'next-auth/react'
 
 type ProjectDetailPageProp = {
     project: {
@@ -49,6 +51,7 @@ type ProjectDetailPageProp = {
         goal_time: string
         targeted_amount: Prisma.Decimal
         raised_amount: Prisma.Decimal
+        project_owners: Array<User>
     }
 }
 const displayDate = (createdDate: string) => {
@@ -57,7 +60,7 @@ const displayDate = (createdDate: string) => {
 }
 export default function Page(props: ProjectDetailPageProp) {
     const router = useRouter()
-
+    const { data: session } = useSession()
     const { project } = props
     const [donateAmount, setDonateAmount] = useState<number>(0)
     if (project === null) {
@@ -72,7 +75,39 @@ export default function Page(props: ProjectDetailPageProp) {
         raised_amount,
         status,
         deposit_wallet_address,
+        project_owners,
     } = project
+
+    let isOwner = false
+    project_owners.forEach((user) => {
+        if (user.id === parseInt(session?.userId ?? '0')) {
+            isOwner = true
+            return
+        }
+    })
+
+    const donateButton = (
+        <Button colorScheme="teal" variant="solid">
+            Donate bro
+        </Button>
+    )
+
+    const ownerButtons = (
+        <ButtonGroup>
+            <Button colorScheme="green" variant="solid">
+                End Donation
+            </Button>
+            <Button colorScheme="red" variant="solid">
+                Refund Donation
+            </Button>
+        </ButtonGroup>
+    )
+
+    const endDonationButton = (
+        <Button colorScheme="teal" variant="solid">
+            End Donation
+        </Button>
+    )
 
     return (
         <Flex direction={'row'} justifyContent={'center'}>
@@ -110,21 +145,27 @@ export default function Page(props: ProjectDetailPageProp) {
                             </StatNumber>
                         </Stat>
                         <Text>{project_details}</Text>
-                        <>
-                            <Stat>
-                                <StatLabel>Amount you are donating</StatLabel>
-                            </Stat>
-                            <NumberInput size="sm" defaultValue={15} min={10}>
-                                <NumberInputField />
-                            </NumberInput>{' '}
-                        </>
+                        {isOwner ? (
+                            <></>
+                        ) : (
+                            <>
+                                <Stat>
+                                    <StatLabel>
+                                        Amount you are donating
+                                    </StatLabel>
+                                </Stat>
+                                <NumberInput
+                                    size="sm"
+                                    defaultValue={15}
+                                    min={10}
+                                >
+                                    <NumberInputField />
+                                </NumberInput>
+                            </>
+                        )}
                     </Stack>
                 </CardBody>
-                <CardFooter>
-                    <Button colorScheme="teal" variant="solid">
-                        Donate bro
-                    </Button>
-                </CardFooter>
+                <CardFooter>{isOwner ? ownerButtons : donateButton}</CardFooter>
             </Card>
         </Flex>
     )
