@@ -1,10 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import {
-    circleObject,
-    prismaClient,
-    viemWalletObject,
-    viemPublicObject,
-} from '@/server/constants'
+import { circleObject, prismaClient } from '@/server/constants'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../auth/[...nextauth]'
 import { Decimal } from '@prisma/client/runtime'
@@ -73,6 +68,6 @@ export default async function handler(
         }
     } else {
         // Not Signed in
-        res.status(401)
+        res.status(403).end('not signed in')
     }
 }

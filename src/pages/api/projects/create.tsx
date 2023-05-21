@@ -1,8 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { UserData, getUser } from '../user/[address]'
 import { PROJECT_STATUS, circleObject, prismaClient } from '@/server/constants'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../auth/[...nextauth]'
 import { Project } from '@prisma/client'
 import crypto from 'crypto'
+import { viemWalletObject, viemPublicObject, account } from '@/server/viem'
+import { factoryABI } from '@/server/abi'
 
 export type CreateProjectData = {
     project_owner_id: number
@@ -25,25 +29,33 @@ export default async function createProjectHandler(
     req: NextApiRequest,
     res: NextApiResponse<Project>
 ) {
-    const { body, method } = req
-    try {
-        const data = body as unknown as CreateProjectData
+    const session = await getServerSession(req, res, authOptions)
+    if (session) {
+        const { address } = session
+        const { body, method } = req
+        try {
+            const data = body as unknown as CreateProjectData
 
-        switch (method) {
-            case 'POST':
-                const createdProject = await createProject(data)
-                res.status(200).json({ ...createdProject })
-                break
-            default:
-                res.setHeader('Allow', ['POST'])
-                res.status(405).end(`Method ${method} Not Allowed`)
+            switch (method) {
+                case 'POST':
+                    const createdProject = await createProject(data, address)
+                    res.status(200).json({ ...createdProject })
+                    break
+                default:
+                    res.setHeader('Allow', ['POST'])
+                    res.status(405).end(`Method ${method} Not Allowed`)
+            }
+        } catch (e) {
+            console.log(e)
+            res.status(500).end('something went wrong')
         }
-    } catch (e) {
-        console.log(e)
-        res.status(500).end('something went wrong')
+    } else {
+        res.status(403).end('not signed in')
+    }
     }
 }
-const createProject = async (inputData: CreateProjectData) => {
+
+const createProject = async (inputData: CreateProjectData, address: string) => {
     const {
         project_data: {
             project_details,
@@ -60,6 +72,10 @@ const createProject = async (inputData: CreateProjectData) => {
         await createDepositWalletAddressAndWalletIdUsingCircle(inputData)
     console.log('deposit_wallet_address', deposit_wallet_address)
     console.log('deposit_wallet_id', deposit_wallet_id)
+
+    // create the smart contract
+    createEscrowContract(address)
+
     // create single project and many categories
     const project = await prismaClient.project.create({
         data: {
@@ -144,4 +160,24 @@ const createCircleBlockchainAddress = async (walletId: string) => {
         data: { data },
     } = createBlockchainAddressRes
     return data
+}
+
+// user's own blockchain address
+const createEscrowContract = async (address: string) => {
+    try {
+        // TODO: create the escrow contract by calling factory
+        const { request } = await viemPublicObject.simulateContract({
+            account,
+            address: '0x', // can read from env? or just add the factory address
+            args: [address], // receipient address
+            abi: factoryABI,
+            functionName: 'createEscrow',
+        })
+        await viemWalletObject.writeContract(request)
+
+        // TODO: update the database + read the address from emitted events?
+        // res.status(200).json({ ...createdProject })
+    } catch (err) {
+        console.log(err)
+    }
 }
