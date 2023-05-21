@@ -32,16 +32,9 @@ import { useSession } from 'next-auth/react'
 import { useState, useEffect, FormEvent } from 'react'
 import { erc20ABI, useAccount, useContract, useNetwork, useToken } from 'wagmi'
 import { useDebounce } from 'use-debounce'
-import {
-    usePrepareSendTransaction,
-    useSendTransaction,
-    useWaitForTransaction,
-    usePrepareContractWrite,
-    useContractWrite,
-} from 'wagmi'
-import { BigNumber, utils } from 'ethers/lib/ethers'
-import { USDC_AVALANCHE_FUJI_CONTRACT } from '@/server/constants'
-import { Hex } from 'viem'
+import { usePrepareContractWrite, useContractWrite } from 'wagmi'
+import { utils } from 'ethers/lib/ethers'
+import { Hex, parseGwei } from 'viem'
 
 export type ProfileCardProps = {}
 
@@ -58,12 +51,12 @@ const ProfileCard = ({}: ProfileCardProps) => {
     const [debouncedAmount] = useDebounce(topUpAmount, 500)
 
     const { config } = usePrepareContractWrite({
-        address: USDC_AVALANCHE_FUJI_CONTRACT,
+        address: '0xAF82969ECF299c1f1Bb5e1D12dDAcc9027431160',
         abi: erc20ABI,
         functionName: 'transfer',
         args: [
-            (session?.deposit_wallet.deposit_wallet_address ?? '') as Hex,
-            utils.parseEther(debouncedAmount),
+            session?.deposit_wallet.deposit_wallet_address as Hex,
+            utils.parseEther(debouncedAmount ?? 0),
         ],
     })
 
