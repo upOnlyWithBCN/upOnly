@@ -15,18 +15,18 @@ import {
 import { useSession, getSession } from 'next-auth/react'
 import SignInCard from '@/components/SignInCard'
 import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
+import { useState } from 'react'
 
 export default function Profile() {
     const { data: session, status } = useSession()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     // We can protect all routes using this https://next-auth.js.org/tutorials/securing-pages-and-api-routes#nextjs-middleware
-    if (status === 'loading') {
-        return <p>Loading...</p>
-    }
+
     // Build profile
     return (
         <>
             <main className={styles.main}>
-                {status === 'unauthenticated' ? (
+                {status === 'unauthenticated' || status === 'loading' ? (
                     <SignInCard />
                 ) : (
                     <Grid
@@ -61,7 +61,6 @@ export default function Profile() {
                                         <ProjectsDonatedCard />
                                     </TabPanel>
                                     <TabPanel maxH="50vh">
-                        
                                         <ProjectsOwnedCard />
                                     </TabPanel>
                                 </TabPanels>
