@@ -51,12 +51,12 @@ const ProfileCard = ({}: ProfileCardProps) => {
     const [debouncedAmount] = useDebounce(topUpAmount, 500)
 
     const { config } = usePrepareContractWrite({
-        address: '0xAF82969ECF299c1f1Bb5e1D12dDAcc9027431160',
+        address: '0x5425890298aed601595a70AB815c96711a31Bc65',
         abi: erc20ABI,
         functionName: 'transfer',
         args: [
             session?.deposit_wallet.deposit_wallet_address as Hex,
-            utils.parseEther(debouncedAmount ?? 0),
+            utils.parseUnits(debouncedAmount, 6),
         ],
     })
 
@@ -134,7 +134,7 @@ const ProfileCard = ({}: ProfileCardProps) => {
                         <Stat>
                             <StatLabel>Balances</StatLabel>
                             <StatHelpText>
-                                USD: ${userUsdBalance.toString()}
+                                USD: ${userUsdBalance?.toString()}
                             </StatHelpText>
                         </Stat>
                         <Stat>
@@ -155,6 +155,7 @@ const ProfileCard = ({}: ProfileCardProps) => {
                         </Stat>
                         <form onSubmit={onSubmit}>
                             <NumberInput
+                                min={0}
                                 precision={2}
                                 step={0.2}
                                 value={topUpAmount}
@@ -173,6 +174,12 @@ const ProfileCard = ({}: ProfileCardProps) => {
                                 </NumberInputStepper>
                             </NumberInput>
                             <br />
+                            <Stat>
+                                <StatHelpText>
+                                    Make sure the amount is less than your
+                                    current USDC in wallet
+                                </StatHelpText>
+                            </Stat>
                             <Button
                                 isLoading={isButtonLoading}
                                 type="submit"
