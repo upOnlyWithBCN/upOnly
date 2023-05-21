@@ -40,7 +40,6 @@ export default function App({
                     <CircleAPIContext>
                         <ClientNavbar />
                         <Component {...pageProps} />
-                        <Footer />
                     </CircleAPIContext>
                 </SessionProvider>
             </WagmiConfig>
