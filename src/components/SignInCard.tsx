@@ -16,50 +16,51 @@ import {
     ModalOverlay,
     Stack,
     useDisclosure,
-} from '@chakra-ui/react';
-import { signIn, useSession } from 'next-auth/react';
-import { SiweMessage } from 'siwe';
-import {
-    useAccount,
-    useConnect,
-    useSignMessage
-} from 'wagmi';
-import { InjectedConnector } from 'wagmi/connectors/injected';
+} from '@chakra-ui/react'
+import { signIn, useSession } from 'next-auth/react'
+import { SiweMessage } from 'siwe'
+import { useAccount, useConnect, useSignMessage } from 'wagmi'
+import { InjectedConnector } from 'wagmi/connectors/injected'
+import { useState } from 'react'
 
-export type SignInCardProps = {};
+export type SignInCardProps = {}
 
-const SignInCard = ({ }: SignInCardProps) => {
-    const { signMessageAsync } = useSignMessage();
-    const { address, isConnected } = useAccount();
+const SignInCard = ({}: SignInCardProps) => {
+    const { signMessageAsync } = useSignMessage()
+    const { address, isConnected } = useAccount()
+    const [isLoading, setIsLoading] = useState<boolean>(false)
     const { connect } = useConnect({
         connector: new InjectedConnector(),
-    });
-    const { data: session, status } = useSession();
-    const { isOpen, onOpen, onClose } = useDisclosure();
+    })
+    const { data: session, status } = useSession()
+    const { isOpen, onOpen, onClose } = useDisclosure()
     const handleLogin = async () => {
+        setIsLoading(true)
         try {
-            const callbackUrl = '/protected';
+            const callbackUrl = '/protected'
             const message = new SiweMessage({
                 domain: window.location.host,
                 address: address,
                 statement: 'Sign in with Ethereum to the app.',
                 uri: window.location.origin,
                 version: '1',
-            });
+            })
             const signature = await signMessageAsync({
                 message: message.prepareMessage(),
-            });
+            })
             signIn('credentials', {
                 address: address,
                 message: JSON.stringify(message),
                 redirect: false,
                 signature,
                 callbackUrl,
-            });
+            })
         } catch (error) {
-            window.alert(error);
+            window.alert(error)
+        } finally {
+            setIsLoading(false)
         }
-    };
+    }
 
     return (
         <Card maxW="md">
@@ -89,11 +90,12 @@ const SignInCard = ({ }: SignInCardProps) => {
                 <Center>
                     {isConnected ? (
                         <Button
+                            isLoading={isLoading}
                             colorScheme="green"
                             onClick={(e) => {
-                                e.preventDefault();
+                                e.preventDefault()
                                 // disconnect()
-                                handleLogin();
+                                handleLogin()
                             }}
                         >
                             Sign In
@@ -113,8 +115,8 @@ const SignInCard = ({ }: SignInCardProps) => {
                                             <Button
                                                 colorScheme="purple"
                                                 onClick={(e) => {
-                                                    e.preventDefault();
-                                                    connect();
+                                                    e.preventDefault()
+                                                    connect()
                                                 }}
                                             >
                                                 Metamask
@@ -139,7 +141,7 @@ const SignInCard = ({ }: SignInCardProps) => {
                 {!session ? <></> : <div>You are signed in</div>}
             </CardBody>
         </Card>
-    );
-};
+    )
+}
 
-export default SignInCard;
+export default SignInCard

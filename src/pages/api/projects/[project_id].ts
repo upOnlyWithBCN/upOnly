@@ -11,6 +11,7 @@ export type GetProjectData = {
           })
         | null
 }
+// TODO add support refund and payout
 
 export default async function getProjectHandler(
     req: NextApiRequest,
@@ -38,6 +39,7 @@ export const getSingleProject = async (project_id: number) => {
         include: {
             category: true,
             chain_ids: true,
+            project_owners: true,
         },
     })
     return result
