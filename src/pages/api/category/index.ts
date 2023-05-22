@@ -1,7 +1,5 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { UserData, getUser } from '../user/[address]'
 import { prismaClient } from '@/server/constants'
-import { Category, Project } from '@prisma/client'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 export type AggregatedCategory = {
     _count: {

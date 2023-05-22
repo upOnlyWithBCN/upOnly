@@ -1,7 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { UserData, getUser } from '../user/[address]'
 import { prismaClient } from '@/server/constants'
 import { Project } from '@prisma/client'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 export type GetProjectsData = {
     projects: Project[]

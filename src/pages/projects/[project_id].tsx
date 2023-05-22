@@ -1,44 +1,34 @@
-import { getProject, walletTransferToAddress } from '@/server/actions'
-import { WalletTransferToAddressReq } from '../api/wallet/transferToAddress'
-import { Prisma, Project, User } from '@prisma/client'
-import { useRouter } from 'next/router'
-import { GetProjectData, getSingleProject } from '../api/projects/[project_id]'
 import {
+    endDonation,
+    refundDonation,
+    walletTransferToAddress,
+} from '@/server/actions'
+import {
+    Badge,
+    Button,
+    ButtonGroup,
     Card,
-    CardHeader,
-    Flex,
-    Avatar,
-    Heading,
-    IconButton,
     CardBody,
     CardFooter,
-    Button,
-    Badge,
-    Box,
-    Text,
+    CardHeader,
+    Flex,
+    Heading,
     Image,
-    Divider,
+    NumberInput,
+    NumberInputField,
+    Stack,
+    StackDivider,
     Stat,
     StatLabel,
     StatNumber,
-    StatHelpText,
-    StackDivider,
-    Stack,
-    Spinner,
-    NumberDecrementStepper,
-    NumberIncrementStepper,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    Slider,
-    SliderFilledTrack,
-    SliderThumb,
-    SliderTrack,
-    ButtonGroup,
+    Text,
 } from '@chakra-ui/react'
-import { useState } from 'react'
+import { Prisma, User } from '@prisma/client'
 import { useSession } from 'next-auth/react'
-import { endDonation, refundDonation } from '@/server/actions'
+import { useRouter } from 'next/router'
+import { useState } from 'react'
+import { getSingleProject } from '../api/projects/[project_id]'
+import { WalletTransferToAddressReq } from '../api/wallet/transferToAddress'
 
 type ProjectDetailPageProp = {
     project: {
@@ -65,7 +55,7 @@ export default function Page(props: ProjectDetailPageProp) {
     const router = useRouter()
     const { data: session } = useSession()
     const { project } = props
-    const [donateAmount, setDonateAmount] = useState<number>(0)
+    const [donateAmount, setDonateAmount] = useState<string>('0')
     const [isEndDonationLoading, setIsEndDonationLoading] =
         useState<boolean>(false)
     const [isRefundDonationLoading, setIsRefundDonationLoading] =
@@ -229,8 +219,11 @@ export default function Page(props: ProjectDetailPageProp) {
                                 </Stat>
                                 <NumberInput
                                     size="sm"
-                                    defaultValue={15}
-                                    min={10}
+                                    defaultValue={0.1}
+                                    min={0.1}
+                                    value={donateAmount}
+                                    precision={2}
+                                    onChange={(value) => setDonateAmount(value)}
                                 >
                                     <NumberInputField />
                                 </NumberInput>

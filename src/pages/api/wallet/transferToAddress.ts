@@ -5,17 +5,21 @@ import { authOptions } from '../auth/[...nextauth]'
 import { Deposit_wallet } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime'
 import {
-    PaymentIntentCreationRequest,
-    TransferRequestBlockchainLocationTypeEnum,
     Chain,
-    TransferRequestSourceWalletLocationTypeEnum,
     MoneyCurrencyEnum,
+    TransferRequestBlockchainLocationTypeEnum,
+    TransferRequestSourceWalletLocationTypeEnum,
 } from '@circle-fin/circle-sdk'
 import crypto from 'crypto'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { getServerSession } from 'next-auth/next'
+import { authOptions } from '../auth/[...nextauth]'
 
 export type WalletTransferToAddressReq = {
     amount: number
-    blockchainAddress: string
+    blockchainAddress: string // smart contract address
+    projectId: number
+    userCircleBlockchainAddress: string
 }
 
 export type WalletTransferToAddressRes = {
@@ -29,6 +33,7 @@ export default async function handler(
     res: NextApiResponse
 ) {
     const session = await getServerSession(req, res, authOptions)
+    console.log(session)
     if (session && req.method === 'POST') {
         try {
             const { body } = req
@@ -46,18 +51,39 @@ export default async function handler(
                 idempotencyKey: crypto.randomUUID(),
                 destination: {
                     type: TransferRequestBlockchainLocationTypeEnum.Blockchain,
-                    address: body.blockchainAddress,
+                    address: body.blockchainAddress, // smart contract address
                     chain: Chain.Avax,
                 },
             }
+
             const circleRes = await circleObject.transfers.createTransfer(
                 reqBody
             )
-            console.log(circleRes)
+            // console.log(circleRes)
+
+            const donation = await prismaClient.donations.create({
+                data: {
+                    amount_donated: body.amount,
+                    userId: parseInt(session.userId),
+                    projectProject_id: body.projectId,
+                },
+            })
+
+            const { request } = await viemPublicObject.simulateContract({
+                account,
+                address: body.blockchainAddress,
+                args: [body.userCircleBlockchainAddress, body.amount], //circle wallet address
+                abi: escrowAbi,
+                functionName: 'addDonation',
+            })
+            const txn = await viemWalletObject.writeContract(request)
+
+            res.status(200).json({ status: 'success' })
         } catch (err) {
-            res.status(401).end('undefined action')
+            console.log(err)
+            res.status(500).end(err)
         }
     } else {
-        res.status(401).end()
+        res.status(401).end('not a post req')
     }
 }
