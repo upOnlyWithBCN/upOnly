@@ -1,4 +1,5 @@
-import { getProject } from '@/server/actions'
+import { getProject, walletTransferToAddress } from '@/server/actions'
+import { WalletTransferToAddressReq } from '../api/wallet/transferToAddress'
 import { Prisma, Project, User } from '@prisma/client'
 import { useRouter } from 'next/router'
 import { GetProjectData, getSingleProject } from '../api/projects/[project_id]'
@@ -116,8 +117,27 @@ export default function Page(props: ProjectDetailPageProp) {
         }
     }
 
+    const handleDonate = async () => {
+        try {
+            const req: WalletTransferToAddressReq = {
+                amount: 0,
+                blockchainAddress: '0xb933608c92Cc300F9B9248A905019cE8Aa9B4445',
+            }
+            await walletTransferToAddress(req)
+        } catch (err) {
+            window.alert('failed to donate')
+        }
+    }
+
     const donateButton = (
-        <Button colorScheme="teal" variant="solid">
+        <Button
+            colorScheme="teal"
+            variant="solid"
+            onClick={(e) => {
+                e.preventDefault()
+                handleDonate()
+            }}
+        >
             Donate bro
         </Button>
     )

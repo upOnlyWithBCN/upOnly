@@ -15,7 +15,15 @@ import {
     CreateCryptoPaymentIntentData,
     CreateCryptoPaymentIntentResponse,
 } from '@/pages/api/wallet/payment-intent'
-const base_url = process.env.BASE_URL_DEV
+import {
+    WalletTransferToAddressRes,
+    WalletTransferToAddressReq,
+} from '@/pages/api/wallet/transferToAddress'
+
+let base_url = process.env.BASE_URL_PROD
+if (process.env.NODE_ENV !== 'production') {
+    base_url = process.env.BASE_URL_DEV
+}
 
 export async function fetchUserDataFromPrisma(address: string) {
     const response = (await (
@@ -145,6 +153,22 @@ export async function createPaymentIntent(data: CreateCryptoPaymentIntentData) {
             },
         })
     ).json()) as CreateCryptoPaymentIntentResponse
+
+    return response.res
+}
+
+export async function walletTransferToAddress(
+    data: WalletTransferToAddressReq
+) {
+    const response = await (
+        await fetch(`${base_url}/api/wallet/transferToAddress`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+    ).json()
 
     return response.res
 }
