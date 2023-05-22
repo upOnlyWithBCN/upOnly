@@ -80,13 +80,19 @@ const ProjectsView = ({}: ProfileCardProps) => {
             templateAreas={`
                   "nav main"
                 `}
-            width={'1200'}
-            gridTemplateRows={'50px 1fr 30px'}
-            gridTemplateColumns={'200px 1fr'}
+            width={'75vw'}
+            gridTemplateRows={'300px 1fr 30px'}
+            gridTemplateColumns={'300px 1fr'}
             h="80vh"
             gap="1"
         >
-            <GridItem pl="2" area={'nav'} marginLeft={16} marginTop={12}>
+            <GridItem
+                pl="2"
+                w="1000px"
+                area={'nav'}
+                marginLeft={16}
+                marginTop={12}
+            >
                 <List>
                     {categories.map((cat, index) => {
                         return (
@@ -106,7 +112,7 @@ const ProjectsView = ({}: ProfileCardProps) => {
                     })}
                 </List>
             </GridItem>
-            <GridItem pl="2" area={'main'}>
+            <GridItem w="100%" pl="2" area={'main'}>
                 {categories.length === 0 ? (
                     <></>
                 ) : (
@@ -153,7 +159,7 @@ const ProjectList = ({ categories }: { categories: string[] }) => {
     return (
         <Stack direction="column" marginRight={24}>
             <Heading>View Available Projects</Heading>
-            <SimpleGrid minChildWidth="200px" spacing="12px">
+            <SimpleGrid minChildWidth="45%" spacing="20px">
                 {isLoading ? (
                     <Spinner />
                 ) : (

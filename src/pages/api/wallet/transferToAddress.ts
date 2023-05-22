@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { factoryABI } from '@/server/abi'
+import { escrowAbi } from '@/server/abi'
 import { account, viemPublicObject, viemWalletObject } from '@/server/viem'
 import { circleObject, prismaClient } from '@/server/constants'
 import { getServerSession } from 'next-auth/next'
@@ -58,7 +58,7 @@ export default async function handler(
             const circleRes = await circleObject.transfers.createTransfer(
                 reqBody
             )
-            // console.log(circleRes)
+            console.log('sent on circle')
 
             const donation = await prismaClient.donations.create({
                 data: {
@@ -68,6 +68,8 @@ export default async function handler(
                 },
             })
 
+            console.log('created on prisma')
+
             const { request } = await viemPublicObject.simulateContract({
                 account,
                 address: body.blockchainAddress,
@@ -75,8 +77,9 @@ export default async function handler(
                 abi: escrowAbi,
                 functionName: 'addDonation',
             })
-            const txn = await viemWalletObject.writeContract(request)
 
+            const txn = await viemWalletObject.writeContract(request)
+            console.log('recorded on blockchain')
             res.status(200).json({ status: 'success' })
         } catch (err) {
             console.log(err)

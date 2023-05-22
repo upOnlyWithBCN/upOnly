@@ -110,8 +110,10 @@ export default function Page(props: ProjectDetailPageProp) {
     const handleDonate = async () => {
         try {
             const req: WalletTransferToAddressReq = {
-                amount: 0,
-                blockchainAddress: '0xb933608c92Cc300F9B9248A905019cE8Aa9B4445',
+                amount: parseInt(donateAmount),
+                blockchainAddress: smart_contract_address,
+                projectId: project_id,
+                userCircleBlockchainAddress: deposit_wallet_address,
             }
             await walletTransferToAddress(req)
         } catch (err) {
@@ -182,11 +184,10 @@ export default function Page(props: ProjectDetailPageProp) {
                 <CardBody>
                     <Stack divider={<StackDivider />} spacing="4">
                         <Image
-                            src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1770&q=80"
+                            src="https://muslimaid-2022.storage.googleapis.com/upload/img_cache/file-28661-a4f05ddb0784ab691408e476706bcdfd.jpg"
                             alt="Green double couch with wooden legs"
                             borderRadius="lg"
                         />
-
                         <Stat>
                             <StatLabel>Raised Amount</StatLabel>
                             <StatNumber>{raised_amount.toString()}</StatNumber>

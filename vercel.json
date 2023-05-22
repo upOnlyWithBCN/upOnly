@@ -1,6 +1,6 @@
 {
     "functions": {
-        "api/**/*.ts": {
+        "pages/api/wallet/transferToAddress.ts": {
             "memory": 3008,
             "maxDuration": 60
         }
