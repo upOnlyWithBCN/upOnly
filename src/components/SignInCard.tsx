@@ -18,6 +18,7 @@ import {
     ModalOverlay,
     Stack,
     useDisclosure,
+    Text,
 } from '@chakra-ui/react'
 import { signIn, useSession } from 'next-auth/react'
 import { SiweMessage } from 'siwe'
@@ -40,6 +41,7 @@ const SignInCard = ({}: SignInCardProps) => {
     const handleLogin = async () => {
         setIsLoading(true)
         try {
+            console.log('test')
             const callbackUrl = '/protected'
             const message = new SiweMessage({
                 domain: window.location.host,
@@ -83,8 +85,7 @@ const SignInCard = ({}: SignInCardProps) => {
                                         {address!.substring(
                                             0,
                                             Math.min(6, address!.length)
-                                        )}{' '}
-                                        sign in to UpOnly
+                                        )}
                                     </Heading>
                                 ) : (
                                     <Heading size="sm">
@@ -98,55 +99,74 @@ const SignInCard = ({}: SignInCardProps) => {
                 </CardHeader>
                 <CardBody>
                     <Center>
-                        {isConnected ? (
-                            <Button
-                                isLoading={isLoading}
-                                colorScheme="green"
-                                onClick={(e) => {
-                                    e.preventDefault()
-                                    // disconnect()
-                                    handleLogin()
-                                }}
-                            >
-                                Sign In
-                            </Button>
-                        ) : (
-                            <>
-                                <Button colorScheme="purple" onClick={onOpen}>
-                                    Connect Wallet
-                                </Button>
-                                <Modal isOpen={isOpen} onClose={onClose}>
-                                    <ModalOverlay />
-                                    <ModalContent>
-                                        <ModalHeader>Choose wallet</ModalHeader>
-                                        <ModalCloseButton />
-                                        <ModalBody>
-                                            <Stack spacing={3}>
-                                                <Button
-                                                    colorScheme="purple"
-                                                    onClick={(e) => {
-                                                        e.preventDefault()
-                                                        connect()
-                                                    }}
-                                                >
-                                                    Metamask
-                                                </Button>
-                                            </Stack>
-                                        </ModalBody>
+                        <Stack>
+                            {isConnected ? (
+                                <>
+                                    <Text>
+                                        UpOnly is a secure, transparent and
+                                        accessible donation platform built on
+                                        top of Circle and USDC.
+                                    </Text>
+                                    <br></br>
+                                    <Text>
+                                        Sign in or create an account with UpOnly
+                                        to begin karma farming now.
+                                    </Text>
+                                    <br></br>
+                                    <Button
+                                        isLoading={isLoading}
+                                        colorScheme="green"
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            handleLogin()
+                                        }}
+                                    >
+                                        Sign In
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button
+                                        colorScheme="purple"
+                                        onClick={onOpen}
+                                    >
+                                        Connect Wallet
+                                    </Button>
+                                    <Modal isOpen={isOpen} onClose={onClose}>
+                                        <ModalOverlay />
+                                        <ModalContent>
+                                            <ModalHeader>
+                                                Choose wallet
+                                            </ModalHeader>
+                                            <ModalCloseButton />
+                                            <ModalBody>
+                                                <Stack spacing={3}>
+                                                    <Button
+                                                        colorScheme="purple"
+                                                        onClick={(e) => {
+                                                            e.preventDefault()
+                                                            connect()
+                                                        }}
+                                                    >
+                                                        Metamask
+                                                    </Button>
+                                                </Stack>
+                                            </ModalBody>
 
-                                        <ModalFooter>
-                                            <Button
-                                                colorScheme="blue"
-                                                mr={3}
-                                                onClick={onClose}
-                                            >
-                                                Close
-                                            </Button>
-                                        </ModalFooter>
-                                    </ModalContent>
-                                </Modal>
-                            </>
-                        )}
+                                            <ModalFooter>
+                                                <Button
+                                                    colorScheme="blue"
+                                                    mr={3}
+                                                    onClick={onClose}
+                                                >
+                                                    Close
+                                                </Button>
+                                            </ModalFooter>
+                                        </ModalContent>
+                                    </Modal>
+                                </>
+                            )}
+                        </Stack>
                     </Center>
                     {!session ? <></> : <div>You are signed in</div>}
                 </CardBody>

@@ -13,12 +13,20 @@ import {
     Stack,
     useColorMode,
     useDisclosure,
+    ButtonGroup,
 } from '@chakra-ui/react'
 import { getUserBalance } from '@/server/actions'
+import { SiweMessage } from 'siwe'
 import styles from './navbar.module.css'
 import { MoonIcon, SunIcon } from '@chakra-ui/icons'
 import { getCsrfToken, useSession, signOut, signIn } from 'next-auth/react'
-import { useAccount, useConnect, useDisconnect, useNetwork } from 'wagmi'
+import {
+    useAccount,
+    useConnect,
+    useDisconnect,
+    useNetwork,
+    useSignMessage,
+} from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { avalanche, bsc, mainnet } from '@wagmi/core/chains'
 import { CgProfile } from 'react-icons/cg'
@@ -28,6 +36,7 @@ import { useState, useEffect } from 'react'
 export type navbarProps = {}
 
 const Navbar = (props: navbarProps) => {
+    const { signMessageAsync } = useSignMessage()
     const { address, isConnected } = useAccount()
     const { connect } = useConnect({
         connector: new InjectedConnector(),
@@ -43,18 +52,57 @@ const Navbar = (props: navbarProps) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const userUsdBalanceRes = await getUserBalance()
-            console.log('user request', userUsdBalanceRes)
-            setUserUsdBalance(userUsdBalanceRes)
+            if (session) {
+                const userUsdBalanceRes = await getUserBalance()
+                console.log('user request', userUsdBalanceRes)
+                setUserUsdBalance(userUsdBalanceRes)
+            }
         }
         fetchData()
-    }, [])
+    }, [session])
+
+    const handleLogin = async () => {
+        try {
+            const callbackUrl = '/protected'
+            const message = new SiweMessage({
+                domain: window.location.host,
+                address: address,
+                statement: 'Sign in with Ethereum to the app.',
+                uri: window.location.origin,
+                version: '1',
+            })
+            const signature = await signMessageAsync({
+                message: message.prepareMessage(),
+            })
+            signIn('credentials', {
+                address: address,
+                message: JSON.stringify(message),
+                redirect: false,
+                signature,
+                callbackUrl,
+            })
+        } catch (error) {
+            window.alert(error)
+        }
+    }
 
     //MetaMask does not support programmatic disconnect. This flag simulates the disconnect behavior by keeping track of connection status in storage.
-    const disconnectButton = (
-        <Button colorScheme="red" onClick={() => disconnect()}>
-            Disconnect Wallet
-        </Button>
+    const disconnectButtonAndSignInButton = (
+        <ButtonGroup>
+            <Button colorScheme="red" onClick={() => disconnect()}>
+                Disconnect Wallet
+            </Button>
+            <Button
+                colorScheme="green"
+                onClick={(e) => {
+                    e.preventDefault()
+                    // disconnect()
+                    handleLogin()
+                }}
+            >
+                Sign In
+            </Button>
+        </ButtonGroup>
     )
 
     const signoutButton = (
@@ -83,7 +131,9 @@ const Navbar = (props: navbarProps) => {
         </Badge>
     )
 
-    const balanceBadge = (
+    const balanceBadge = !session ? (
+        <Badge colorScheme={'red'}>Not Signed In</Badge>
+    ) : (
         <Badge colorScheme={'green'}>{'$' + userUsdBalance?.toString()}</Badge>
     )
 
@@ -96,7 +146,7 @@ const Navbar = (props: navbarProps) => {
             />
             {isConnected ? (
                 !session ? (
-                    disconnectButton
+                    disconnectButtonAndSignInButton
                 ) : (
                     signoutButton
                 )
