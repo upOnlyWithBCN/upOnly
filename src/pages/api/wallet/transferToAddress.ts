@@ -2,8 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { circleObject, prismaClient } from '@/server/constants'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '../auth/[...nextauth]'
-import { Deposit_wallet } from '@prisma/client'
-import { Decimal } from '@prisma/client/runtime'
+import { account, viemPublicObject, viemWalletObject } from '@/server/viem'
+import { escrowAbi } from '@/server/abi'
 import {
     PaymentIntentCreationRequest,
     TransferRequestBlockchainLocationTypeEnum,
@@ -15,8 +15,9 @@ import crypto from 'crypto'
 
 export type WalletTransferToAddressReq = {
     amount: number
-    blockchainAddress: string
+    blockchainAddress: string // smart contract address
     projectId: number
+    userCircleBlockchainAddress: string
 }
 
 export type WalletTransferToAddressRes = {
@@ -65,7 +66,16 @@ export default async function handler(
                     projectProject_id: body.projectId,
                 },
             })
-            console.log(donation)
+
+            const { request } = await viemPublicObject.simulateContract({
+                account,
+                address: body.blockchainAddress,
+                args: [body.userCircleBlockchainAddress, body.amount], //circle wallet address
+                abi: escrowAbi,
+                functionName: 'addDonation',
+            })
+            const txn = await viemWalletObject.writeContract(request)
+
             res.status(200).json({ status: 'success' })
         } catch (err) {
             console.log(err)

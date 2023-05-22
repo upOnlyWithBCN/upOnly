@@ -123,6 +123,7 @@ export default function Page(props: ProjectDetailPageProp) {
                 amount: parseFloat(donateAmount),
                 blockchainAddress: smart_contract_address,
                 projectId: project_id,
+                userCircleBlockchainAddress: deposit_wallet_address,
             }
             await walletTransferToAddress(req)
         } catch (err) {
