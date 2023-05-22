@@ -29,7 +29,7 @@ import {
 } from 'wagmi'
 import { InjectedConnector } from 'wagmi/connectors/injected'
 import { avalanche, bsc, mainnet } from '@wagmi/core/chains'
-import { CgProfile } from 'react-icons/cg'
+import { CgHome, CgProfile } from 'react-icons/cg'
 import NextLink from 'next/link'
 import { useState, useEffect } from 'react'
 import { Router } from 'next/router'
@@ -195,6 +195,9 @@ const Navbar = (props: navbarProps) => {
                 {chainBadge}
             </Stack>
             <Spacer></Spacer>
+            <NextLink href="/" passHref>
+                <IconButton aria-label="Home" icon={<CgHome size={28} />} />
+            </NextLink>
             <Stack direction="column" justifyContent={'center'}>
                 {balanceBadge}
             </Stack>
