@@ -19,7 +19,11 @@ import {
     WalletTransferToAddressRes,
     WalletTransferToAddressReq,
 } from '@/pages/api/wallet/transferToAddress'
-const base_url = process.env.BASE_URL_DEV
+
+let base_url = process.env.BASE_URL_PROD
+if (process.env.NODE_ENV !== 'production') {
+    base_url = process.env.BASE_URL_DEV
+}
 
 export async function fetchUserDataFromPrisma(address: string) {
     const response = (await (
@@ -156,7 +160,7 @@ export async function createPaymentIntent(data: CreateCryptoPaymentIntentData) {
 export async function walletTransferToAddress(
     data: WalletTransferToAddressReq
 ) {
-    const response = (await (
+    const response = await (
         await fetch(`${base_url}/api/wallet/transferToAddress`, {
             method: 'POST',
             body: JSON.stringify(data),
@@ -164,7 +168,7 @@ export async function walletTransferToAddress(
                 'Content-Type': 'application/json',
             },
         })
-    ).json()) as CreateCryptoPaymentIntentResponse
+    ).json()
 
     return response.res
 }
