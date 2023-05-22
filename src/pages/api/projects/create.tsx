@@ -80,7 +80,6 @@ const createProject = async (inputData: CreateProjectData, address: string) => {
             status: PROJECT_STATUS.INITIAL,
             project_details,
             project_title,
-            completed_txn_hash: '',
             goal_time: new Date(goal_time),
             completion_time: new Date(completion_time),
             targeted_amount,
