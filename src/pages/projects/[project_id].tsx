@@ -230,7 +230,7 @@ export default function Page(props: ProjectDetailPageProp) {
                                 <NumberInput
                                     size="sm"
                                     defaultValue={15}
-                                    min={10}
+                                    min={0.1}
                                 >
                                     <NumberInputField />
                                 </NumberInput>
