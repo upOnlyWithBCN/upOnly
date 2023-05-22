@@ -7,6 +7,7 @@ import {
 } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { avalancheFuji } from 'viem/chains'
+
 const viemPublicClientInstance = () => {
     return createPublicClient({
         chain: avalancheFuji,
@@ -16,10 +17,11 @@ const viemPublicClientInstance = () => {
 
 export const viemPublicObject = viemPublicClientInstance()
 
+export const account = privateKeyToAccount(
+    process.env.ADMIN_WALLET_PRIVATE_KEY as Hex
+)
+
 const viemWalletClientInstance = () => {
-    const account = privateKeyToAccount(
-        process.env.ADMIN_WALLET_PRIVATE_KEY as Hex
-    )
     return createWalletClient({
         account,
         chain: avalancheFuji,

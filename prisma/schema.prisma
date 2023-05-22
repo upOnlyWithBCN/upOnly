@@ -48,6 +48,7 @@ model Project {
   chain_ids              Chain[]
   // addresses
   smart_contract_address String  @unique
+  completed_txn_hash     String  @default("")
   // circle
   deposit_wallet_address String  @unique
   deposit_wallet_id      String  @unique

@@ -12,6 +12,7 @@ import {
     CardBody,
     CardFooter,
     Button,
+    Badge,
     Box,
     Text,
     Image,
@@ -36,6 +37,7 @@ import {
 } from '@chakra-ui/react'
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { endDonation, refundDonation } from '@/server/actions'
 
 type ProjectDetailPageProp = {
     project: {
@@ -63,10 +65,15 @@ export default function Page(props: ProjectDetailPageProp) {
     const { data: session } = useSession()
     const { project } = props
     const [donateAmount, setDonateAmount] = useState<number>(0)
+    const [isEndDonationLoading, setIsEndDonationLoading] =
+        useState<boolean>(false)
+    const [isRefundDonationLoading, setIsRefundDonationLoading] =
+        useState<boolean>(false)
     if (project === null) {
         return <></>
     }
     const {
+        project_id,
         project_title,
         project_details,
         goal_time,
@@ -75,6 +82,7 @@ export default function Page(props: ProjectDetailPageProp) {
         raised_amount,
         status,
         deposit_wallet_address,
+        smart_contract_address,
         project_owners,
     } = project
 
@@ -86,6 +94,28 @@ export default function Page(props: ProjectDetailPageProp) {
         }
     })
 
+    const handleEndDonation = async () => {
+        setIsEndDonationLoading(true)
+        try {
+            await endDonation(project_id, smart_contract_address)
+        } catch (err) {
+            window.alert('failed to end')
+        } finally {
+            setIsEndDonationLoading(false)
+        }
+    }
+
+    const handleRefundDonation = async () => {
+        setIsRefundDonationLoading(true)
+        try {
+            await refundDonation(project_id, smart_contract_address)
+        } catch (err) {
+            window.alert('failed to refund')
+        } finally {
+            setIsRefundDonationLoading(false)
+        }
+    }
+
     const donateButton = (
         <Button colorScheme="teal" variant="solid">
             Donate bro
@@ -94,19 +124,27 @@ export default function Page(props: ProjectDetailPageProp) {
 
     const ownerButtons = (
         <ButtonGroup>
-            <Button colorScheme="green" variant="solid">
+            <Button
+                colorScheme="green"
+                variant="solid"
+                onClick={(e) => {
+                    e.preventDefault()
+                    handleEndDonation()
+                }}
+            >
                 End Donation
             </Button>
-            <Button colorScheme="red" variant="solid">
+            <Button
+                colorScheme="red"
+                variant="solid"
+                onClick={(e) => {
+                    e.preventDefault()
+                    handleRefundDonation()
+                }}
+            >
                 Refund Donation
             </Button>
         </ButtonGroup>
-    )
-
-    const endDonationButton = (
-        <Button colorScheme="teal" variant="solid">
-            End Donation
-        </Button>
     )
 
     return (
@@ -115,6 +153,21 @@ export default function Page(props: ProjectDetailPageProp) {
             <Card maxW="lg" variant="filled">
                 <CardHeader>
                     <Heading size="md">{project_title}</Heading>
+                    <Badge
+                        colorScheme={
+                            project.status === 'FUNDING_COMPLETE'
+                                ? 'green'
+                                : project.status === 'FUNDING_FAILED'
+                                ? 'red'
+                                : 'yellow'
+                        }
+                    >
+                        {project.status === 'FUNDING_COMPLETE'
+                            ? 'Completed'
+                            : project.status === 'FUNDING_FAILED'
+                            ? 'Failed'
+                            : 'In Progress'}
+                    </Badge>
                 </CardHeader>
                 <CardBody>
                     <Stack divider={<StackDivider />} spacing="4">

@@ -84,6 +84,36 @@ export async function getProject(project_id: number): Promise<GetProjectData> {
     ).json()) as GetProjectData
 }
 
+export async function endDonation(
+    project_id: number,
+    contract_address: string
+): Promise<GetProjectData> {
+    return (await (
+        await fetch(`${base_url}/api/projects/${project_id}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'releaseDonations',
+                contract_address,
+            }),
+        })
+    ).json()) as GetProjectData
+}
+
+export async function refundDonation(
+    project_id: number,
+    contract_address: string
+): Promise<GetProjectData> {
+    return (await (
+        await fetch(`${base_url}/api/projects/${project_id}`, {
+            method: 'POST',
+            body: JSON.stringify({
+                action: 'refundDonations',
+                contract_address,
+            }),
+        })
+    ).json()) as GetProjectData
+}
+
 export async function getUserProjectsDonated(data: GetUserProjectsDonatedData) {
     const res = (await (
         await fetch('./api/user/projectsDonated')
