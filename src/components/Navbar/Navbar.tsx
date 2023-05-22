@@ -24,6 +24,7 @@ import { avalanche, bsc, mainnet } from '@wagmi/core/chains'
 import { CgProfile } from 'react-icons/cg'
 import NextLink from 'next/link'
 import { useState, useEffect } from 'react'
+import { Router } from 'next/router'
 
 export type navbarProps = {}
 
@@ -147,6 +148,9 @@ const Navbar = (props: navbarProps) => {
             <Stack direction="column" justifyContent={'center'}>
                 {balanceBadge}
             </Stack>
+            <NextLink href="/projects/create" passHref>
+                <Button colorScheme="green">Create Project</Button>
+            </NextLink>
             <NextLink href="/profile" passHref>
                 <IconButton
                     aria-label="Profile"
