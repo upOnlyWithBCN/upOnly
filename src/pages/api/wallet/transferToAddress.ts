@@ -16,6 +16,7 @@ import crypto from 'crypto'
 export type WalletTransferToAddressReq = {
     amount: number
     blockchainAddress: string
+    projectId: number
 }
 
 export type WalletTransferToAddressRes = {
@@ -29,6 +30,7 @@ export default async function handler(
     res: NextApiResponse
 ) {
     const session = await getServerSession(req, res, authOptions)
+    console.log(session)
     if (session && req.method === 'POST') {
         try {
             const { body } = req
@@ -46,18 +48,30 @@ export default async function handler(
                 idempotencyKey: crypto.randomUUID(),
                 destination: {
                     type: TransferRequestBlockchainLocationTypeEnum.Blockchain,
-                    address: body.blockchainAddress,
+                    address: body.blockchainAddress, // smart contract address
                     chain: Chain.Avax,
                 },
             }
+
             const circleRes = await circleObject.transfers.createTransfer(
                 reqBody
             )
-            console.log(circleRes)
+            // console.log(circleRes)
+
+            const donation = await prismaClient.donations.create({
+                data: {
+                    amount_donated: body.amount,
+                    userId: parseInt(session.userId),
+                    projectProject_id: body.projectId,
+                },
+            })
+            console.log(donation)
+            res.status(200).json({ status: 'success' })
         } catch (err) {
-            res.status(401).end('undefined action')
+            console.log(err)
+            res.status(500).end(err)
         }
     } else {
-        res.status(401).end()
+        res.status(401).end('not a post req')
     }
 }

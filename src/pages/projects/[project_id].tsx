@@ -65,7 +65,7 @@ export default function Page(props: ProjectDetailPageProp) {
     const router = useRouter()
     const { data: session } = useSession()
     const { project } = props
-    const [donateAmount, setDonateAmount] = useState<number>(0)
+    const [donateAmount, setDonateAmount] = useState<string>('0')
     const [isEndDonationLoading, setIsEndDonationLoading] =
         useState<boolean>(false)
     const [isRefundDonationLoading, setIsRefundDonationLoading] =
@@ -120,8 +120,9 @@ export default function Page(props: ProjectDetailPageProp) {
     const handleDonate = async () => {
         try {
             const req: WalletTransferToAddressReq = {
-                amount: 0,
-                blockchainAddress: '0xb933608c92Cc300F9B9248A905019cE8Aa9B4445',
+                amount: parseFloat(donateAmount),
+                blockchainAddress: smart_contract_address,
+                projectId: project_id,
             }
             await walletTransferToAddress(req)
         } catch (err) {
@@ -229,8 +230,11 @@ export default function Page(props: ProjectDetailPageProp) {
                                 </Stat>
                                 <NumberInput
                                     size="sm"
-                                    defaultValue={15}
+                                    defaultValue={0.1}
                                     min={0.1}
+                                    value={donateAmount}
+                                    precision={2}
+                                    onChange={(value) => setDonateAmount(value)}
                                 >
                                     <NumberInputField />
                                 </NumberInput>
