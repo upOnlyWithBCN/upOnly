@@ -1,9 +1,8 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { PROJECT_STATUS, circleObject, prismaClient } from '@/server/constants'
-import { Category, Chain, Project } from '@prisma/client'
-import { getProjects } from '@/server/actions'
-import { viemPublicObject, viemWalletObject, account } from '@/server/viem'
 import { escrowAbi } from '@/server/abi'
+import { PROJECT_STATUS, prismaClient } from '@/server/constants'
+import { account, viemPublicObject, viemWalletObject } from '@/server/viem'
+import { Category, Chain, Project } from '@prisma/client'
+import { NextApiRequest, NextApiResponse } from 'next'
 
 // should probably rename this
 export type GetProjectData =
