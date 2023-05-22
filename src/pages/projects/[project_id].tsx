@@ -1,77 +1,63 @@
-import { getProject, walletTransferToAddress } from '@/server/actions'
-import { WalletTransferToAddressReq } from '../api/wallet/transferToAddress'
-import { Prisma, Project, User } from '@prisma/client'
-import { useRouter } from 'next/router'
-import { GetProjectData, getSingleProject } from '../api/projects/[project_id]'
+import { endDonation, refundDonation, walletTransferToAddress } from '@/server/actions';
 import {
+    Badge,
+    Button,
+    ButtonGroup,
     Card,
-    CardHeader,
-    Flex,
-    Avatar,
-    Heading,
-    IconButton,
     CardBody,
     CardFooter,
-    Button,
-    Badge,
-    Box,
-    Text,
+    CardHeader,
+    Flex,
+    Heading,
     Image,
-    Divider,
+    NumberInput,
+    NumberInputField,
+    Stack,
+    StackDivider,
     Stat,
     StatLabel,
     StatNumber,
-    StatHelpText,
-    StackDivider,
-    Stack,
-    Spinner,
-    NumberDecrementStepper,
-    NumberIncrementStepper,
-    NumberInput,
-    NumberInputField,
-    NumberInputStepper,
-    Slider,
-    SliderFilledTrack,
-    SliderThumb,
-    SliderTrack,
-    ButtonGroup,
-} from '@chakra-ui/react'
-import { useState } from 'react'
-import { useSession } from 'next-auth/react'
-import { endDonation, refundDonation } from '@/server/actions'
+    Text
+} from '@chakra-ui/react';
+import { Prisma, User } from '@prisma/client';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useState } from 'react';
+import { getSingleProject } from '../api/projects/[project_id]';
+import { WalletTransferToAddressReq } from '../api/wallet/transferToAddress';
 
 type ProjectDetailPageProp = {
     project: {
-        created_time: Date
-        project_id: number
-        smart_contract_address: string
-        deposit_wallet_address: string
-        deposit_wallet_id: string
-        status: string
-        project_details: string
-        project_title: string
-        completion_time: string
-        goal_time: string
-        targeted_amount: Prisma.Decimal
-        raised_amount: Prisma.Decimal
-        project_owners: Array<User>
-    }
-}
+        created_time: Date;
+        project_id: number;
+        smart_contract_address: string;
+        deposit_wallet_address: string;
+        deposit_wallet_id: string;
+        status: string;
+        project_details: string;
+        project_title: string;
+        completion_time: string;
+        goal_time: string;
+        targeted_amount: Prisma.Decimal;
+        raised_amount: Prisma.Decimal;
+        project_owners: Array<User>;
+    };
+};
 const displayDate = (createdDate: string) => {
-    const date = new Date(createdDate)
-    return date.toISOString()
-}
+    const date = new Date(createdDate);
+    return date.toISOString();
+};
 export default function Page(props: ProjectDetailPageProp) {
-    const router = useRouter()
-    const { data: session } = useSession()
-    const { project } = props
-    const [donateAmount, setDonateAmount] = useState<number>(0)
+    const router = useRouter();
+    const { data: session } = useSession();
+    const { project } = props;
+    const [donateAmount, setDonateAmount] = useState<number>(0);
     const [isEndDonationLoading, setIsEndDonationLoading] =
-        useState<boolean>(false)
+        useState<boolean>(false);
     const [isRefundDonationLoading, setIsRefundDonationLoading] =
-        useState<boolean>(false)
+        useState<boolean>(false);
     if (project === null) {
-        return <></>
+        return <></>;
     }
     const {
         project_id,
@@ -85,62 +71,62 @@ export default function Page(props: ProjectDetailPageProp) {
         deposit_wallet_address,
         smart_contract_address,
         project_owners,
-    } = project
+    } = project;
 
-    let isOwner = false
+    let isOwner = false;
     project_owners.forEach((user) => {
         if (user.id === parseInt(session?.userId ?? '0')) {
-            isOwner = true
-            return
+            isOwner = true;
+            return;
         }
-    })
+    });
 
     const handleEndDonation = async () => {
-        setIsEndDonationLoading(true)
+        setIsEndDonationLoading(true);
         try {
-            await endDonation(project_id, smart_contract_address)
+            await endDonation(project_id, smart_contract_address);
         } catch (err) {
-            window.alert('failed to end')
+            window.alert('failed to end');
         } finally {
-            setIsEndDonationLoading(false)
+            setIsEndDonationLoading(false);
         }
-    }
+    };
 
     const handleRefundDonation = async () => {
-        setIsRefundDonationLoading(true)
+        setIsRefundDonationLoading(true);
         try {
-            await refundDonation(project_id, smart_contract_address)
+            await refundDonation(project_id, smart_contract_address);
         } catch (err) {
-            window.alert('failed to refund')
+            window.alert('failed to refund');
         } finally {
-            setIsRefundDonationLoading(false)
+            setIsRefundDonationLoading(false);
         }
-    }
+    };
 
     const handleDonate = async () => {
         try {
             const req: WalletTransferToAddressReq = {
                 amount: 0,
                 blockchainAddress: '0xb933608c92Cc300F9B9248A905019cE8Aa9B4445',
-            }
-            await walletTransferToAddress(req)
+            };
+            await walletTransferToAddress(req);
         } catch (err) {
-            window.alert('failed to donate')
+            window.alert('failed to donate');
         }
-    }
+    };
 
     const donateButton = (
         <Button
             colorScheme="teal"
             variant="solid"
             onClick={(e) => {
-                e.preventDefault()
-                handleDonate()
+                e.preventDefault();
+                handleDonate();
             }}
         >
             Donate bro
         </Button>
-    )
+    );
 
     const ownerButtons = (
         <ButtonGroup>
@@ -148,8 +134,8 @@ export default function Page(props: ProjectDetailPageProp) {
                 colorScheme="green"
                 variant="solid"
                 onClick={(e) => {
-                    e.preventDefault()
-                    handleEndDonation()
+                    e.preventDefault();
+                    handleEndDonation();
                 }}
             >
                 End Donation
@@ -158,14 +144,14 @@ export default function Page(props: ProjectDetailPageProp) {
                 colorScheme="red"
                 variant="solid"
                 onClick={(e) => {
-                    e.preventDefault()
-                    handleRefundDonation()
+                    e.preventDefault();
+                    handleRefundDonation();
                 }}
             >
                 Refund Donation
             </Button>
         </ButtonGroup>
-    )
+    );
 
     return (
         <Flex direction={'row'} justifyContent={'center'}>
@@ -178,15 +164,15 @@ export default function Page(props: ProjectDetailPageProp) {
                             project.status === 'FUNDING_COMPLETE'
                                 ? 'green'
                                 : project.status === 'FUNDING_FAILED'
-                                ? 'red'
-                                : 'yellow'
+                                    ? 'red'
+                                    : 'yellow'
                         }
                     >
                         {project.status === 'FUNDING_COMPLETE'
                             ? 'Completed'
                             : project.status === 'FUNDING_FAILED'
-                            ? 'Failed'
-                            : 'In Progress'}
+                                ? 'Failed'
+                                : 'In Progress'}
                     </Badge>
                 </CardHeader>
                 <CardBody>
@@ -241,17 +227,17 @@ export default function Page(props: ProjectDetailPageProp) {
                 <CardFooter>{isOwner ? ownerButtons : donateButton}</CardFooter>
             </Card>
         </Flex>
-    )
+    );
 }
 
 export async function getServerSideProps({
     query: { project_id },
 }: {
-    query: { project_id: string }
+    query: { project_id: string; };
 }) {
     const projectData = await JSON.parse(
         JSON.stringify(await getSingleProject(parseInt(project_id)))
-    )
+    );
 
     return {
         props: {
@@ -259,5 +245,5 @@ export async function getServerSideProps({
                 ...projectData,
             },
         },
-    }
+    };
 }
