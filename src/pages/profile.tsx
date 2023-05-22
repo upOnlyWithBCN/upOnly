@@ -1,25 +1,27 @@
-import ProfileCard from '../components/Profile/ProfileCard'
-import ProjectsDonatedCard from '@/components/Profile/ProjectsDonatedCard'
-import ProjectsOwnedCard from '@/components/Profile/ProjectsOwnedCard'
-import styles from '@/styles/Profile.module.css'
+import ProjectsDonatedCard from '@/components/Profile/ProjectsDonatedCard';
+import ProjectsOwnedCard from '@/components/Profile/ProjectsOwnedCard';
+import SignInCard from '@/components/SignInCard';
+import styles from '@/styles/Profile.module.css';
 import {
-    Button,
-    SimpleGrid,
-    Stack,
+    Card,
+    CardHeader,
     Grid,
     GridItem,
-    Card,
     Heading,
-    CardHeader,
-} from '@chakra-ui/react'
-import { useSession, getSession } from 'next-auth/react'
-import SignInCard from '@/components/SignInCard'
-import { Tabs, TabList, TabPanels, Tab, TabPanel } from '@chakra-ui/react'
-import { useState } from 'react'
+    Stack,
+    Tab,
+    TabList,
+    TabPanel,
+    TabPanels,
+    Tabs
+} from '@chakra-ui/react';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
+import ProfileCard from '../components/Profile/ProfileCard';
 
 export default function Profile() {
-    const { data: session, status } = useSession()
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const { data: session, status } = useSession();
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     // We can protect all routes using this https://next-auth.js.org/tutorials/securing-pages-and-api-routes#nextjs-middleware
 
     // Build profile
@@ -70,5 +72,5 @@ export default function Profile() {
                 )}
             </main>
         </>
-    )
+    );
 }
