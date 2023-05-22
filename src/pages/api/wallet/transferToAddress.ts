@@ -55,7 +55,9 @@ export default async function handler(
             )
             console.log(circleRes)
         } catch (err) {
-            console.log(err)
+            res.status(401).end('undefined action')
         }
+    } else {
+        res.status(401).end()
     }
 }
