@@ -72,7 +72,7 @@ const createProject = async (inputData: CreateProjectData, address: string) => {
     console.log('deposit_wallet_id', deposit_wallet_id);
 
     // create the smart contract
-    createEscrowContract(address);
+    const escrowAddress = await createEscrowContract(address);
 
     // create single project and many categories
     const project = await prismaClient.project.create({
@@ -80,12 +80,12 @@ const createProject = async (inputData: CreateProjectData, address: string) => {
             status: PROJECT_STATUS.INITIAL,
             project_details,
             project_title,
-            completed_txn_hash: '',
+            completed_txn_hash: "",
             goal_time: new Date(goal_time),
             completion_time: new Date(completion_time),
             targeted_amount,
             raised_amount: 0,
-            smart_contract_address: deposit_wallet_address,
+            smart_contract_address: escrowAddress!,
             deposit_wallet_address: deposit_wallet_address,
             deposit_wallet_id,
             category: {
@@ -163,7 +163,6 @@ const createCircleBlockchainAddress = async (walletId: string) => {
 // user's own blockchain address
 const createEscrowContract = async (address: string) => {
     try {
-
         const { request } = await viemPublicObject.simulateContract({
             account,
             address: '0xBeD70a214e34Bd263bfC37A92215f38f1b323F8B', // hardcoded factory address
@@ -176,11 +175,7 @@ const createEscrowContract = async (address: string) => {
             hash: txn
         });
 
-        console.log(receipt.logs, "logs");
-        // return receipt.logs;
-
-        // TODO: update the database + read the address from emitted events?
-        // res.status(200).json({ ...createdProject })
+        return receipt.logs[0].address;
     } catch (err) {
         console.log(err);
     }
